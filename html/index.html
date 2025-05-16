@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shoe Compare</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+    }
+
+    /* Sidebar filter panel */
+    .sidebar {
+      width: 250px;
+      background-color: #f7f7f7;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+    }
+
+    .filter-group {
+      margin-bottom: 20px;
+    }
+
+    .filter-group label,
+    .filter-group select,
+    .filter-group input {
+      display: block;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+
+    /* Main content */
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      padding: 0;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+.navbar {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 20px;
+}
+
+.nav {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown {
+  position: relative;
+}
+ .dropdown:hover .dropdown-menu {
+  display: block;
+}
+.nav-label {
+  font-weight: bold;
+  cursor: pointer;
+}
+ .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.dropdown-menu li {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #eee;
+}
+
+
+
+
+.nav > li {
+  position: relative;
+}
+
+.nav > li > a {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+  padding: 8px 12px;
+  display: block;
+}
+
+
+
+
+.dropdown-menu li a {
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+  color: black;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f0f0f0;
+}
+
+
+
+    .product-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .product {
+      border: 1px solid #ccc;
+      width: 22%;
+      padding: 10px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .product img {
+      width: 100%;
+      height: auto;
+
+    }
+
+    input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+  position: relative;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<!-- Sidebar filters -->
+<div class="sidebar"><!--this is your filters js please make the nav bar hide-->
+  <h2>Filters</h2>
+
+  <div class="filter-group">
+    <label for="user-ratings">Ratings</label>
+    <select id="user-ratings">
+      <option>highest First</option>
+      <option>lowest</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label for="price-range">Price Range</label>
+    <select id="price-range">
+      <option>All</option>
+      <option>Under R500</option>
+      <option>R500 - R1000</option>
+      <option>Over R1000</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+  <label for="release-date">Release Date</label>
+  <input type="date" id="release-date" name="release-date">
+</div>
+
+  <div class="filter-group">
+    <label for="size">Size</label>
+    <input type="number" id="size" placeholder="e.g. 6 or 9">
+  </div>
+
+  <div class="filter-group">
+    <label for="brand">Brand</label>
+    <select id="brand">
+      <option>All</option>
+      <option>Nike</option>
+      <option>Adidas</option>
+      <option>Jordan</option>
+      <option>Puma</option>
+    </select>
+    </div>
+     <div class="filter-group">
+    <label for="retailer">retailer</label>
+    <select id="retailer">
+      <option>All</option>
+      <option>stockX</option>
+      <option>flight club</option>
+      <option>Stadium goods</option>
+     
+      
+      
+      <!-- Add more -->
+    </select>
+  </div>
+</div>
+
+
+
+  
+
+<!-- Main content area -->
+<div class="main-content">
+
+ <nav class="navbar">
+  <ul class="nav">
+    <li class="dropdown">
+      <a href="index.html" class="nav-label">ALL</a>
+      </li>
+    <li class="dropdown">
+      <a href="jordan.html" class="nav-label">Jordan ▼</a>
+      <ul class="dropdown-menu" data-brand="Jordan">
+        <li data-category="CJ01">Jordan 1</li>
+        <li data-category="CJ02">Jordan 2</li>
+        <li data-category="CJ03">Jordan 3</li>
+        <li data-category="CJ04">Jordan 4</li>
+        <li data-category="CJ05">Jordan 5</li>
+        <!-- Add more -->
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="nike.html" class="nav-label">Nike ▼</a>
+      <ul class="dropdown-menu" data-brand="Nike">
+        <li data-category="CN01">Air Force 1</li>
+        <li data-category="CN02">Air Max Plus</li>
+        <li data-category="CN03">SB Dunk</li>
+        <li data-category="CN04">P-6000</li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+     <a href="Adidas.html" class="nav-label">Adidas ▼</a>
+      <ul class="dropdown-menu" data-brand="Adidas">
+        <li data-category="CA01">Yeezy Boost 350 V2</li>
+        <li data-category="CA02">Yeezy Boost 700</li>
+        <li data-category="CA03">Samba</li>
+        <li data-category="CA04">Handball Spezial</li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="Puma.html" class="nav-label">Puma ▼</a>
+      <ul class="dropdown-menu" data-brand="Puma">
+        <li data-category="CP01">MB.01</li>
+        <li data-category="CP02">MB.02</li>
+        <li data-category="CP03">Suede</li>
+        <li data-category="CP04">Speedcat</li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+
+  
+  <h2>All Shoes</h2>
+  <div class="product-grid"><!--*change this to php use this container-->
+    <div class="product">
+      <a href="shoe-details.html"><!--shoe-details.html?id=1-->
+        <img src="images/airmax90.jpg" alt="Nike Air Max 90"><!--use php variables here-->
+      </a>
+      <h3>Nike Air Max 90</h3><!--remove hardcoded variables for php-->
+      <p>R 1699</p>
+      <p>Size: 9</p>
+      <p>Brand: Nike</p>
+      <a href="shoe-details.html?id=1">Sneakers</a><!--<a href="shoe-details.php?id=<?= $row['Shoe_ID'] ?>"><?= $row['Category'] ?></a>-->
+    </div>
+
+    <div class="product">
+      <a href="shoe-details.html?id=2">
+        <img src="https://stockx.com/air-jordan-4-retro-fear-2024" alt="jordan 4">
+      </a>
+      <h3>Jordan 4</h3>
+      <p>R 899</p>
+      <p>Size: 5</p>
+      <p>Brand: Aldo</p>
+      <a href="shoe-details.html?id=2">Pumps</a>
+    </div>
+
+    <!-- Add more shoes -->
+  </div>
+</div>
+<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
+
+<div id="id01" class="modal">
+  
+  <form class="modal-content animate" action="/action_page.php" method="post">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <img src="img_avatar2.png" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container">
+      <label for="uname"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="uname" required>
+
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+        
+      <button type="submit">Login</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+      <span class="psw">Forgot <a href="#">password?</a></span>
+    </div>
+  </form>
+</div>
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+</body>
+</html>
