@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Aldo Classic Pumps - Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      /*background: #f9f9f9;*/
+    }
+     nav ul {
+      list-style: none;
+      display: flex;
+      gap: 15px;
+      padding: 0;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+.navbar {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 20px;
+}
+
+.nav {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown {
+  position: relative;
+}
+ .dropdown:hover .dropdown-menu {
+  display: block;
+}
+.nav-label {
+  font-weight: bold;
+  cursor: pointer;
+}
+ .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.dropdown-menu li {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #eee;
+}
+
+
+
+
+.nav > li {
+  position: relative;
+}
+
+.nav > li > a {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+  padding: 8px 12px;
+  display: block;
+}
+
+
+
+
+.dropdown-menu li a {
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+  color: black;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f0f0f0;
+}
+
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      /*background: #fff;*/
+      padding: 20px;
+      border-radius: 10px;
+      /*box-shadow: 0 0 10px rgba(0,0,0,0.1);*/
+    }
+
+   .size-picker p 
+   {
+  margin-bottom: 10px;
+}
+
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sizes button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.sizes button:hover {
+  border-color: #1a73e8;
+  background-color: #eef4ff;
+}
+
+.sizes button:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+    img {
+      max-width: 300px;
+      display: block;
+      margin-bottom: 20px;
+    }
+    .retailer {
+      margin-bottom: 10px;
+    }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+    
+ <nav class="navbar">
+  <ul class="nav">
+    <li class="dropdown">
+      <a href="index.html" class="nav-label">ALL</a>
+      </li>
+    <li class="dropdown">
+      <a href="jordan.html" class="nav-label">Jordan ▼</a>
+      <ul class="dropdown-menu" data-brand="Jordan">
+        <li data-category="CJ01">Jordan 1</li>
+        <li data-category="CJ02">Jordan 2</li>
+        <li data-category="CJ03">Jordan 3</li>
+        <li data-category="CJ04">Jordan 4</li>
+        <li data-category="CJ05">Jordan 5</li>
+        <!-- Add more -->
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="nike.html" class="nav-label">Nike ▼</a>
+      <ul class="dropdown-menu" data-brand="Nike">
+        <li data-category="CN01">Air Force 1</li>
+        <li data-category="CN02">Air Max Plus</li>
+        <li data-category="CN03">SB Dunk</li>
+        <li data-category="CN04">P-6000</li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+     <a href="Adidas.html" class="nav-label">Adidas ▼</a>
+      <ul class="dropdown-menu" data-brand="Adidas">
+        <li data-category="CA01">Yeezy Boost 350 V2</li>
+        <li data-category="CA02">Yeezy Boost 700</li>
+        <li data-category="CA03">Samba</li>
+        <li data-category="CA04">Handball Spezial</li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a href="Puma.html" class="nav-label">Puma ▼</a>
+      <ul class="dropdown-menu" data-brand="Puma">
+        <li data-category="CP01">MB.01</li>
+        <li data-category="CP02">MB.02</li>
+        <li data-category="CP03">Suede</li>
+        <li data-category="CP04">Speedcat</li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+
+
+  <div class="main-content">
+    <div class="sidebar">
+      <div class="size-picker">
+  <p><strong>Size</strong></p>
+  <div class="sizes">
+    <button>3</button>
+    <button>3.5</button>
+    <button>4</button>
+    <button>4.5</button>
+    <button>5</button>
+    <button>5.5</button>
+    <button>6</button>
+    <button>6.5</button>
+    <button>7</button>
+    <button>7.5</button>
+    <button>8</button>
+    <button>8.5</button>
+  </div>
+</div>
+      </div>
+    </div>
+<div class="container">
+  <h1>Aldo Classic Pumps</h1>
+  <img src="https://images.stockx.com/images/Air-Jordan-4-Retro-Fear-2024-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&fm=webp&auto=compress&trim=color&q=90&dpr=2&updated_at=1738193358" alt="Aldo Classic Pumps">
+
+  <p><strong>Brand:</strong> Jordan</p>
+   <p><strong>Name:</strong> Jordan 4 Retro Fear (2024) </p>
+  <p><strong>Category:</strong> Jordan 4</p>
+  <p><strong>Size:</strong> 9</p>
+  <p><strong>Color:</strong> Black/White/Anthraci</p>
+  <p><strong>release-date:</strong> 2024-11-16</p>
+  <p><strong>description:</strong> The 2024 edition of the Air Jordan 4 Retro 'Fear' brings back the 2013 colorway, using a nubuck upper accented with a grey mudguard and toe wrap. White molded eyelets match the Jumpman logos on the tongue tag and heel. White speckles decorate the a black foam midsole, which packs an exposed Air-Sole heel unit.</p>
+  <p><strong>Listed by Retailer:</strong> Stockx</p><!--thiswill always be stockx-->
+
+  
+
+  <h2>Prices from Other Retailers:</h2>
+  <div class="retailer">
+    <strong>Stockx:</strong> <strong>$181.00</strong> -
+    <a href="https://stockx.com/air-jordan-4-retro-fear-2024" target="_blank">Visit stockx</a>
+  </div>
+  <div class="retailer">
+    <strong>flightclub:</strong>  <strong>$180.00</strong> –
+    <a href="https://www.flightclub.com/air-jordan-4-retro-fear-2024-fq8138-002" target="_blank">Visit flight club</a>
+  </div>
+   <div class="retailer">
+    <strong>flightclub:</strong>  <strong>$120.00</strong> –
+    <a href="http://www.goat.com/sneakers/air-jordan-4-retro-fear-2024-fq8138-002" target="_blank">Visit GOAT</a>
+  </div>
+  
+
+  <h3>Customer Reviews:</h3>
+  <ul>
+    <li>⭐️⭐️⭐️⭐️☆ – “Super comfortable and stylish.” – Olivia Martin</li>
+    <li>⭐️⭐️⭐️☆☆ – “Exactly as pictured, great value.” – Mason Harris</li>
+    <li>⭐️⭐️⭐️⭐️⭐️ – “Would buy again in a heartbeat!” – Ava Thomas</li>
+  </ul>
+
+  <p><a href="index.html">← Back to All Shoes</a></p>
+</div>
+
+</body>
+</html>
