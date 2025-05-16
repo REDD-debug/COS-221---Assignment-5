@@ -15,7 +15,7 @@ connection.connect((err) => {
   console.log("✅ Connected to MySQL");
 });
 
-// Retailer IDs
+// Retailer mapping to DB IDs
 const retailerMap = {
   "stockX": "R001",
   "flightClub": "R002",
@@ -23,37 +23,7 @@ const retailerMap = {
   "stadiumGoods": "R004"
 };
 
-// Category detection
-const categoryMap = {
-  // Jordan
-  "Jordan 1": "CJ01",
-  "Jordan 4": "CJ02",
-  "Jordan 11": "CJ03",
-  "Jordan 12": "CJ04",
-  "Jordan 14": "CJ05",
-  // Nike
-  "Air Force 1": "CN01",
-  "Air Max Plus": "CN02",
-  "SB Dunk": "CN03",
-  "P-6000": "CN04",
-  // Adidas
-  "Yeezy Boost 350 V2": "CA01",
-  "Yeezy Boost 700": "CA02",
-  "Samba": "CA03",
-  "Handball Spezial": "CA04",
-  // Puma
-  "MB.01": "CP01",
-  "MB.02": "CP02",
-  "MB.03": "CP03",
-  "MB.04": "CP04",
-  "Suede": "CP05",
-  "Speedcat": "CP06",
-  "Mostro": "CP07",
-  "Easy Rider": "CP08",
-  "KidSuper": "CP09",
-  "AC Milan": "CP10"
-};
-
+// Insert into Shoe_Products
 function insertSneaker(product, brand) {
   return new Promise((resolve, reject) => {
     const sql = `
@@ -84,51 +54,20 @@ function insertSneaker(product, brand) {
   });
 }
 
-function insertIntoBrandTable(shoeID, brand, shoeName) {
-  const brandTable = brand;
-  let model = null;
-  let categoryID = null;
-
-  // Sort keys by length descending to prioritize longer matches like "Jordan 12"
-  const sortedKeys = Object.keys(categoryMap).sort((a, b) => b.length - a.length);
-
-  for (const key of sortedKeys) {
-    if (shoeName.toLowerCase().includes(key.toLowerCase())) {
-      categoryID = categoryMap[key];
-      model = key;
-      break;
-    }
-  }
-
-  if (!categoryID) return Promise.resolve(); // No match
-
-  const sql = `
-    INSERT IGNORE INTO ${brandTable} (Shoe_ID, Category_ID, Model)
-    VALUES (?, ?, ?)
-  `;
-
-  const values = [shoeID, categoryID, model];
-
-  return new Promise((resolve, reject) => {
-    connection.query(sql, values, (err) => {
-      if (err) {
-        console.error(`❌ Insert into ${brandTable} failed:`, err.message);
-        return reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
+// Insert into PriceListing
 function insertPrices(styleID, shoe) {
   const inserts = [];
+
   const resellLinks = shoe.resellLinks || {};
   const lowestResellPrice = shoe.lowestResellPrice || {};
 
   for (const retailer of Object.keys(lowestResellPrice)) {
-    const retailerID = retailerMap[retailer];
+    const key = retailer;
+    const retailerID = retailerMap[key];
     const rawPrice = lowestResellPrice[retailer];
     const parsedPrice = parseFloat(rawPrice);
+
+    console.log(`🛒 Retailer: ${retailer} (${key}), Mapped: ${retailerID}, Price: ${rawPrice}`);
 
     if (!retailerID || isNaN(parsedPrice)) continue;
 
@@ -138,11 +77,11 @@ function insertPrices(styleID, shoe) {
     `;
 
     const values = [
-      `${styleID}_${retailerID}`,
-      styleID,
-      parsedPrice,
-      retailerID,
-      resellLinks[retailer] || null
+      `${styleID}_${retailerID}`, // Price_ID
+      styleID,                    // Shoe_ID
+      parsedPrice,                // Price
+      retailerID,                 // Retailer_ID
+      resellLinks[retailer] || null // Buy_Link
     ];
 
     inserts.push(new Promise((resolve, reject) => {
@@ -159,6 +98,7 @@ function insertPrices(styleID, shoe) {
   return Promise.all(inserts);
 }
 
+// Fetch products for a brand
 function getProductsAsync(brand) {
   return new Promise((resolve) => {
     sneaks.getProducts(brand, 63, (err, products) => {
@@ -171,6 +111,7 @@ function getProductsAsync(brand) {
   });
 }
 
+// Fetch product details by styleID
 function getProductDetailsAsync(styleID) {
   return new Promise((resolve, reject) => {
     sneaks.getProductPrices(styleID, (err, shoe) => {
@@ -180,6 +121,7 @@ function getProductDetailsAsync(styleID) {
   });
 }
 
+// Populate shoes + prices
 async function populateShoes() {
   const brands = ["Nike", "Jordan", "Adidas", "Puma"];
 
@@ -190,7 +132,6 @@ async function populateShoes() {
     for (const product of products) {
       try {
         await insertSneaker(product, brand);
-        await insertIntoBrandTable(product.styleID, brand, product.shoeName);
         const detailed = await getProductDetailsAsync(product.styleID);
         await insertPrices(product.styleID, detailed);
       } catch (err) {
@@ -201,7 +142,7 @@ async function populateShoes() {
     console.log(`✅ Inserted all ${brand} sneakers`);
   }
 
-  console.log("🎉 Shoe + price + brand category population complete.");
+  console.log("🎉 Shoe + price population complete.");
   connection.end();
 }
 
