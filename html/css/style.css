@@ -15,7 +15,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: rgba(247, 247, 247, 0.85); /* Slight transparency */
+   background-color: rgba(247, 247, 247, 0.85); /* Slight transparency */
   padding: 20px;
   border-right: 1px solid #ccc;
   height: 100vh;
@@ -62,12 +62,13 @@ nav ul li a {
 }
 
 .navbar {
-  background-color: rgba(255, 255, 255, 0.8); /* Slight transparency */
+  background-color: rgba(255, 255, 255, 0.8); 
   border-bottom: 1px solid #ccc;
   padding: 10px 20px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-   font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
+ border-radius: 0 0 12px 12px;
 }
 
 .nav {
@@ -179,27 +180,42 @@ input[type=text], input[type=password] {
 button {
   background-color: #04AA6D;
   color: white;
-  padding: 10px 16px; /* Smaller size */
-  margin: 8px 0;
+  padding: 8px 16px; /* Smaller padding */
+  margin: 10px 0;
   border: none;
   cursor: pointer;
-  width: 100%;
+  width: fit-content; /* Make the button shrink to its content */
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
   font-weight: 600;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
-  background-color: #038f5c;
-  opacity: 0.95;
+  background-color: #8df703;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
-/* Cancel button */
 .cancelbtn {
-  width: auto;
-  padding: 8px 14px;
+  width: fit-content;
+  padding: 6px 14px;
   background-color: #f44336;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.cancelbtn:hover {
+  background-color: #d7372f;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
 
 /* Login modal styling */
 .imgcontainer {
