@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  background-image: url('Adidas\ logo\ pink.jpeg'); /* Replace with actual path */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Poppins:wght@400;600&display=swap');
