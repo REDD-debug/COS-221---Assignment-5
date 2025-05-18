@@ -4,7 +4,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #f5f7fa;
   color: #333;
-  background-image: url('puma.jpeg'); /* Replace with actual path */
+  background-image: url('background.jpeg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -13,12 +13,14 @@ body {
 
 .sidebar {
   width: 250px;
-   background-color: rgba(247, 247, 247, 0.85); /* Slight transparency */
+  background-color: rgba(247, 247, 247, 0.85);
   padding: 20px;
   border-right: 1px solid #ccc;
   height: 100vh;
   box-sizing: border-box;
   font-family: 'Merriweather', serif;
+   background-color: rgb(52, 50, 50); /* changed from light color */
+  color: white;
 }
 
 .sidebar h2 {

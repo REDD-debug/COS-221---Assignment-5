@@ -4,7 +4,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #f5f7fa;
   color: #333;
-  background-image: url('jordan.jpeg'); /* Replace with actual path */
+  background-image: url('background.jpeg'); 
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -19,6 +19,8 @@ body {
   height: 100vh;
   box-sizing: border-box;
   font-family: 'Merriweather', serif;
+   background-color: rgb(52, 50, 50); /* changed from light color */
+  color: white;
 }
 
 .sidebar h2 {
