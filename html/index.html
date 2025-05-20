@@ -19,7 +19,8 @@
 <body>
 
 <!-- Sidebar filters -->
-<div class="sidebar"><!--this is your filters js please make the nav bar hide-->
+<div class="sidebar">
+  <!--this is your filters js please make the nav bar hide-->
   <h2>Filters</h2>
 
   <div class="filter-group">
@@ -68,7 +69,7 @@
       <option>flight club</option>
       <option>Stadium goods</option>
      
-      
+   
       
       <!-- Add more -->
     </select>
@@ -208,7 +209,11 @@
     <!-- Add more shoes -->
   </div>
 </div>
-<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
+<div class="auth-buttons">
+  <button onclick="document.getElementById('id01').style.display='block'" class="auth-btn">Login</button>
+ <button onclick="window.location.href='signup.html'" class="signup-btn">Sign Up</button>
+
+</div>
 
 <div id="id01" class="modal">
   
@@ -236,6 +241,8 @@
       <span class="psw">Forgot <a href="#">password?</a></span>
     </div>
   </form>
+
+  
 </div>
 <script>
 // Get the modal

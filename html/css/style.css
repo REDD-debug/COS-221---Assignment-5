@@ -30,6 +30,9 @@ body {
 
 .filter-group {
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .filter-group label,
@@ -69,6 +72,7 @@ nav ul li a {
   -webkit-backdrop-filter: blur(6px);
     font-family: 'Poppins', sans-serif;
  border-radius: 0 0 12px 12px;
+ 
 }
 
 .nav {
@@ -177,27 +181,35 @@ input[type=text], input[type=password] {
 }
 
 /* Buttons */
-button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 8px 16px; /* Smaller padding */
-  margin: 10px 0;
-  border: none;
+/* Login Button Styles */
+
+button[onclick*="id01"] {
+  display: block;
+  margin-left: auto;
+
+  background-color: white;
+  color: black;
+  border: 1.5px solid black;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  width: fit-content; /* Make the button shrink to its content */
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 6px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+
+  height: 28px;
+  min-width: 60px;
+  line-height: 1;
 }
 
-button:hover {
-  background-color: #8df703;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+
+
+button[onclick*="id01"]:hover {
+  background-color: black;
+  color: white;
 }
+
+/* Ensure nav items don't overlap */
 
 .cancelbtn {
   width: fit-content;
@@ -300,3 +312,34 @@ span.psw {
 }
 
 
+.signup-btn {
+  display: block;
+  margin-left: auto;
+
+  background-color: white;
+  color: black;
+  border: 1.5px solid black;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  height: 28px;
+  min-width: 60px;
+  line-height: 1;
+}
+
+.signup-btn:hover {
+  background-color: black;
+  color: white;
+}
+
+
+.auth-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
