@@ -343,3 +343,35 @@ span.psw {
   gap: 10px;
   margin-top: 10px;
 }
+.forgot-password {
+  text-align: right;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.forgot-password a {
+  text-decoration: none;
+  color: #007BFF;
+  font-weight: 600;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  background-image: url('avatar.jpeg');
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
