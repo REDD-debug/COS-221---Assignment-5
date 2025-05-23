@@ -25,3 +25,25 @@ const sizeSelect = document.getElementById('size');
 const sortSelect = document.getElementById('sort');
 const limitSelect = document.getElementById('limit');
 const applyFiltersBtn = document.getElementById('apply-filters');
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+    // Load products
+    fetchProducts();
+    
+    // Set up event listeners
+    applyFiltersBtn.addEventListener('click', () => {
+        currentPage = 1;
+        updateFilters();
+        fetchProducts();
+    });
+    
+    // Allow Enter key to apply filters
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            currentPage = 1;
+            updateFilters();
+            fetchProducts();
+        }
+    });
+});
