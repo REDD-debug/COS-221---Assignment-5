@@ -139,3 +139,11 @@ async function fetchProducts() {
         productsContainer.innerHTML = `<div class="error">Error loading products: ${error.message}</div>`;
     }
 }
+
+// Display products in the grid
+function displayProducts(products) {
+    if (products.length === 0) {
+        productsContainer.innerHTML = '<div class="error">No products found matching your criteria.</div>';
+        return;
+    }
+    
