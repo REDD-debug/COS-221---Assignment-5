@@ -12,273 +12,15 @@
       display: flex;
     }
 
-    /* Sidebar filter panel */
-    .sidebar {
-      width: 250px;
-      background-color: #f7f7f7;
-      padding: 20px;
-      border-right: 1px solid #ccc;
-      height: 100vh;
-      box-sizing: border-box;
-    }
 
-    .sidebar h2 {
-      margin-top: 0;
-    }
-
-    .filter-group {
-      margin-bottom: 20px;
-    }
-
-    .filter-group label,
-    .filter-group select,
-    .filter-group input {
-      display: block;
-      margin-bottom: 8px;
-      width: 100%;
-    }
-
-    /* Main content */
-    .main-content {
-      flex-grow: 1;
-      padding: 20px;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 15px;
-      padding: 0;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-    }
-.navbar {
-  background-color: #fff;
-  border-bottom: 1px solid #ccc;
-  padding: 10px 20px;
-}
-
-.nav {
-  list-style: none;
-  display: flex;
-  gap: 30px;
-  margin: 0;
-  padding: 0;
-}
-
-.dropdown {
-  position: relative;
-}
- .dropdown:hover .dropdown-menu {
-  display: block;
-}
-.nav-label {
-  font-weight: bold;
-  cursor: pointer;
-}
- .dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #fff;
-  border: 1px solid #ccc;
-  z-index: 1000;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-
-
-.dropdown-menu li {
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-.dropdown-menu li:hover {
-  background-color: #eee;
-}
-
-
-
-
-.nav > li {
-  position: relative;
-}
-
-.nav > li > a {
-  text-decoration: none;
-  font-weight: bold;
-  color: black;
-  padding: 8px 12px;
-  display: block;
-}
-
-
-
-
-.dropdown-menu li a {
-  padding: 10px 15px;
-  display: block;
-  text-decoration: none;
-  color: black;
-}
-
-.dropdown-menu li a:hover {
-  background-color: #f0f0f0;
-}
-
-
-
-    .product-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .product {
-      border: 1px solid #ccc;
-      width: 22%;
-      padding: 10px;
-      box-sizing: border-box;
-      text-align: center;
-    }
-
-    .product img {
-      width: 100%;
-      height: auto;
-
-    }
-
-    input[type=text], input[type=password] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-/* Set a style for all buttons */
-button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-/* Extra styles for the cancel button */
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
-
-/* Center the image and position the close button */
-.imgcontainer {
-  text-align: center;
-  margin: 24px 0 12px 0;
-  position: relative;
-}
-
-img.avatar {
-  width: 40%;
-  border-radius: 50%;
-}
-
-.container {
-  padding: 16px;
-}
-
-span.psw {
-  float: right;
-  padding-top: 16px;
-}
-
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  padding-top: 60px;
-}
-
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
-}
-
-/* The Close Button (x) */
-.close {
-  position: absolute;
-  right: 25px;
-  top: 0;
-  color: #000;
-  font-size: 35px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: red;
-  cursor: pointer;
-}
-
-/* Add Zoom Animation */
-.animate {
-  -webkit-animation: animatezoom 0.6s;
-  animation: animatezoom 0.6s
-}
-
-@-webkit-keyframes animatezoom {
-  from {-webkit-transform: scale(0)} 
-  to {-webkit-transform: scale(1)}
-}
-  
-@keyframes animatezoom {
-  from {transform: scale(0)} 
-  to {transform: scale(1)}
-}
-
-/* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
-  span.psw {
-     display: block;
-     float: none;
-  }
-  .cancelbtn {
-     width: 100%;
-  }
-}
 
   </style>
 </head>
 <body>
 
 <!-- Sidebar filters -->
-<div class="sidebar"><!--this is your filters js please make the nav bar hide-->
+<div class="sidebar">
+  <!--this is your filters js please make the nav bar hide-->
   <h2>Filters</h2>
 
   <div class="filter-group">
@@ -320,21 +62,19 @@ span.psw {
     </select>
     </div>
      <div class="filter-group">
-    <label for="retailer">retailer</label>
+    <label for="retailer">Retailer</label>
     <select id="retailer">
       <option>All</option>
       <option>stockX</option>
       <option>flight club</option>
       <option>Stadium goods</option>
      
-      
+   
       
       <!-- Add more -->
     </select>
   </div>
 </div>
-
-
 
   
 
@@ -469,15 +209,19 @@ span.psw {
     <!-- Add more shoes -->
   </div>
 </div>
-<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Login</button>
+<div class="auth-buttons">
+  <button onclick="document.getElementById('id01').style.display='block'" class="auth-btn">Login</button>
+ <button onclick="window.location.href='signup.html'" class="signup-btn">Sign Up</button>
+
+</div>
 
 <div id="id01" class="modal">
-  
   <form class="modal-content animate" action="/action_page.php" method="post">
-    <div class="imgcontainer">
-      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-      <img src="img_avatar2.png" alt="Avatar" class="avatar">
-    </div>
+   <div class="imgcontainer">
+  <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+  <div class="avatar"></div>
+</div>
+
 
     <div class="container">
       <label for="uname"><b>Username</b></label>
@@ -485,19 +229,25 @@ span.psw {
 
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
-        
+
+      <!-- Forgot password link moved here -->
+      
+      
       <button type="submit">Login</button>
       <label>
         <input type="checkbox" checked="checked" name="remember"> Remember me
       </label>
     </div>
-
+     
     <div class="container" style="background-color:#f1f1f1">
       <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-      <span class="psw">Forgot <a href="#">password?</a></span>
     </div>
+     <div class="forgot-password">
+        Forgot <a href="signup.html">password?</a>
+      </div>
   </form>
 </div>
+
 <script>
 // Get the modal
 var modal = document.getElementById('id01');
