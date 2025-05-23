@@ -146,4 +146,26 @@ function displayProducts(products) {
         productsContainer.innerHTML = '<div class="error">No products found matching your criteria.</div>';
         return;
     }
+
+    let html = '<div class="products-grid">';
+
+    products.forEach(product => {
+        html += `
+            <div class="product-card">
+                <div class="product-image">
+                <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">${product.Name}</h3>
+                    <p class="product-brand">Brand: ${product.Brand_ID || 'N/A'}</p>
+                    <p>Color: ${product.Color || 'N/A'}</p>
+                    <p>Size: ${product.Size || 'N/A'}</p>
+                    <p class="product-description">${product.Description || 'No description available.'}</p>
+                    <p class="product-price">Price: $${product.Price !== undefined ? product.Price : 'N/A'}</p>
+                    ${product.buy_link ? `<a href="${product.buy_link}" class="buy-button" target="_blank">Buy Now</a>` : ''}
+                </div>
+            </div>
+        `;
+    });
     
+    html += '</div>';
