@@ -62,3 +62,80 @@ function updateFilters() {
     
     productsPerPage = filters.limit;
 }
+
+// Fetch products from API
+async function fetchProducts() {
+    try {
+        // Show loading state
+        productsContainer.innerHTML = '<div class="loading">Loading products...</div>';
+        
+        // Prepare request data
+        const requestData = {
+            type: "GetAllProducts",
+            apikey: API_KEY,
+            return: [
+                "Shoe_ID", "Name", "Brand_ID", "Color", "Size", "image_URL",
+                "Release_Date", "Description", "Price", "buy_link" // <-- Added Price here
+            ],
+            limit: filters.limit,
+            offset: (currentPage - 1) * filters.limit,
+            sort: filters.sort,
+            order: filters.order
+        };
+        
+        // Add search filters if they exist
+        if (filters.search) {
+            requestData.search = {
+                Name: filters.search
+            };
+            requestData.fuzzy = true;
+        }
+        
+        if (filters.brand) {
+            if (!requestData.search) requestData.search = {};
+            requestData.search.Brand_ID = filters.brand;
+        }
+        
+        if (filters.color) {
+            if (!requestData.search) requestData.search = {};
+            requestData.search.Color = filters.color;
+        }
+        
+        if (filters.size) {
+            if (!requestData.search) requestData.search = {};
+            requestData.search.Size = filters.size;
+        }
+        
+        // Make API request
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Display products
+            displayProducts(data.data);
+            
+            // Update total products count (this would come from the API)
+            totalProducts = data.data.length * 3; // Placeholder - we would should get the actual total from our API
+            
+            // Update pagination
+            updatePagination();
+            
+            // Populate filter options if not already done
+            if (brandSelect.options.length <= 1) {
+                populateFilterOptions(data.data);
+            }
+        } else {
+            throw new Error(data.message || 'Failed to fetch products');
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        productsContainer.innerHTML = `<div class="error">Error loading products: ${error.message}</div>`;
+    }
+}
