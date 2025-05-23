@@ -78,5 +78,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
         }
     </style>
 </head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+            <div id="loginMessage"></div>
+        </form>
+        <p>Don't have an account? <a href="signup.php">Sign up here</a>.</p>
+    </div>
 
+
+
+
+</body>    
 </html>
