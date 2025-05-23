@@ -159,6 +159,99 @@ try {
     ]);
     error_log("Critical API Error: " . $forError->getMessage());
 }
+
+
+
+    private function registerUser($name, $surname, $email, $password, $user_type){
+        try {
+            $errors = [];
+            if (empty($name)) $errors[] = "Your name is required";
+            if (empty($surname)) $errors[] = "Your surname is required";
+            if (empty($email)) $errors[] = "An email is required";
+            if (empty($password)) $errors[] = "A password is required";
+            if (empty($user_type)) $errors[] = "A User type is required";
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
+                $errors[] = "Invalid email format";
+            }
+
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/', $password)){
+                $errors[] = "You password must be 8+ chars with uppercase, lowercase, number and symbol";
+            }
+
+            $valid_types = ["Customer"];
+            if (!in_array($user_type, $valid_types)) {
+                $errors[] = "Invalid user type";
+            }
+
+            if (!empty($errors)){
+                throw new Exception(implode(", ", $errors), 400);
+            }
+
+            $checking = $this->forConnection->prepare("SELECT email FROM user_info WHERE email = ?");
+            if ($checking === false){
+                throw new Exception("Database preparation failed: " . $this->forConnection->error, 500);
+            }
+
+            $checking->bind_param("s", $email);
+            if (!$checking->execute()){
+                throw new Exception("Database query failed: " . $checking->error, 500);
+            }
+
+            if ($checking->get_result()->num_rows > 0){
+                $checking->close();
+                throw new Exception("Email already exists", 409);
+            }
+            $checking->close();
+
+            $api_key = bin2hex(random_bytes(16));
+            $salt = bin2hex(random_bytes(16));
+            $hashed_password = hash("sha256", $salt . $password);
+
+            $inserting = $this->forConnection->prepare(
+                "INSERT INTO user_info 
+                (name, surname, email, password, type, api_key, forSalt) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
+
+            if ($inserting === false){
+                throw new Exception("Database preparation failed: " . $this->forConnection->error, 500);
+            }
+
+            $bindResult = $inserting->bind_param(
+                "sssssss", 
+                $name, 
+                $surname, 
+                $email, 
+                $hashed_password, 
+                $user_type, 
+                $api_key,
+                $salt
+            );
+
+            if (!$bindResult){
+                throw new Exception("Parameter binding failed", 500);
+            }
+
+            if (!$inserting->execute()){
+                throw new Exception("Registration failed: " . $inserting->error, 500);
+            }
+            $inserting->close();
+
+            echo json_encode([
+                "status" => "success",
+                "timestamp" => time(),
+                "data" => ["apikey" => $api_key]
+            ]);
+
+        } catch (Exception $forError){
+            error_log("Registration Error: " . $forError->getMessage());
+            $this->handleError($forError);
+        }
+    }
+
+
+    
 ?>
 
 
