@@ -58,3 +58,34 @@ function checkEmailAvailability(email, name, surname, password, userType) {
 }
 
 
+
+function registerUser(name, surname, email, password, userType) {
+    fetch("http://localhost/COS221/api.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            type: "Register",
+            name: name,
+            surname: surname,
+            email: email,
+            password: password,
+            user_type: userType
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            if (confirm("You have successfully registered.")) {
+                window.location.href = "index.php";
+            }            
+        } else {
+            showError("Registration failed: " + (data.message || "Unknown error"));
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        showError("An error has occurred during registration.");
+    });
+}
