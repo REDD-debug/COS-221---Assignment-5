@@ -47,3 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Update filters from form inputs
+function updateFilters() {
+    filters = {
+        search: searchInput.value.trim(),
+        brand: brandSelect.value,
+        color: colorSelect.value,
+        size: sizeSelect.value,
+        sort: sortSelect.value.includes('DESC') ? sortSelect.value.split(' ')[0] : sortSelect.value,
+        order: sortSelect.value.includes('DESC') ? 'DESC' : 'ASC',
+        limit: parseInt(limitSelect.value)
+    };
+    
+    productsPerPage = filters.limit;
+}
