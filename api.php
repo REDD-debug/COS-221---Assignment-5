@@ -250,8 +250,164 @@ try {
         }
     }
 
-
     
+
+      private function getAllProducts($forData) {
+    try {
+        if (!isset($forData['type']) || !is_string($forData['type']) || $forData['type'] !== "GetAllProducts") {
+            throw new Exception("Missing or invalid 'type'. Expected 'GetAllProducts'.", 400);
+        }
+
+        if (!isset($forData['apikey']) || !is_string($forData['apikey']) || trim($forData['apikey']) === '') {
+            throw new Exception("Missing or invalid 'apikey'", 400);
+        }
+
+        if (!isset($forData['return']) || !is_array($forData['return']) || empty($forData['return'])) {
+            throw new Exception("Missing or invalid 'return' field", 400);
+        }
+
+        // Verify API key
+        $apiKey = $forData['apikey'];
+        $userCheck = $this->forConnection->prepare("SELECT id FROM user_info WHERE api_key = ?");
+        $userCheck->bind_param("s", $apiKey);
+        $userCheck->execute();
+        $userResult = $userCheck->get_result();
+        if ($userResult->num_rows === 0) {
+            throw new Exception("Invalid API key", 401);
+        }
+
+        // Allowed fields
+        $allowedShoeFields = [
+            "Shoe_ID", "Name", "Brand_ID", "Color", "Size", "User_ID", 
+            "image_URL", "Release_Date", "Description"
+        ];
+
+        $allowedPriceFields = [
+            "Price_ID", "Shoe_ID", "Price", "Retailer_ID", "buy_link"
+        ];
+
+        // Validate requested fields
+        $shoeFields = [];
+        $priceFields = [];
+        foreach ($forData['return'] as $field) {
+            if (in_array($field, $allowedShoeFields)) {
+                $shoeFields[] = "sp.`$field`";
+            } elseif (in_array($field, $allowedPriceFields)) {
+                $priceFields[] = "pl.`$field`";
+            } else {
+                throw new Exception("Invalid field requested in 'return': '$field'", 400);
+            }
+        }
+
+        if (empty($shoeFields) && empty($priceFields)) {
+            throw new Exception("No valid return fields specified", 400);
+        }
+
+        // SELECT clause
+        $selectFields = array_merge($shoeFields, $priceFields);
+        $selectClause = implode(", ", $selectFields);
+
+        // Subquery to get only one price row per product (lowest Price_ID)
+        $query = "SELECT $selectClause 
+                  FROM shoe_products sp 
+                  LEFT JOIN (
+                      SELECT *
+                      FROM pricelisting pl1
+                      WHERE pl1.Price_ID = (
+                          SELECT MIN(pl2.Price_ID)
+                          FROM pricelisting pl2
+                          WHERE pl2.Shoe_ID = pl1.Shoe_ID
+                      )
+                  ) pl ON sp.Shoe_ID = pl.Shoe_ID";
+
+        $params = [];
+        $types = '';
+        $where = [];
+
+        // Handle search
+        if (isset($forData['search']) && is_array($forData['search'])) {
+            foreach ($forData['search'] as $col => $val) {
+                if (in_array($col, $allowedShoeFields)) {
+                    $tablePrefix = "sp.";
+                } elseif (in_array($col, $allowedPriceFields)) {
+                    $tablePrefix = "pl.";
+                } else {
+                    continue;
+                }
+
+                $isFuzzy = isset($forData['fuzzy']) && $forData['fuzzy'] === true;
+                if ($isFuzzy) {
+                    $where[] = "$tablePrefix`$col` LIKE ?";
+                    $params[] = '%' . $val . '%';
+                } else {
+                    $where[] = "$tablePrefix`$col` = ?";
+                    $params[] = $val;
+                }
+                $types .= 's';
+            }
+        }
+
+        if (!empty($where)) {
+            $query .= " WHERE " . implode(" AND ", $where);
+        }
+
+        // Handle sorting
+        if (isset($forData['sort'])) {
+            $sortField = $forData['sort'];
+            if (in_array($sortField, $allowedShoeFields)) {
+                $tablePrefix = "sp.";
+            } elseif (in_array($sortField, $allowedPriceFields)) {
+                $tablePrefix = "pl.";
+            } else {
+                throw new Exception("Invalid sort field: '$sortField'", 400);
+            }
+
+            $order = isset($forData['order']) ? strtoupper($forData['order']) : "ASC";
+            if (!in_array($order, ["ASC", "DESC"])) {
+                throw new Exception("Invalid order value: '$order'. Must be 'ASC' or 'DESC'.", 400);
+            }
+
+            $query .= " ORDER BY $tablePrefix`$sortField` $order";
+        }
+
+        // Handle limit
+        if (isset($forData['limit']) && is_numeric($forData['limit']) && $forData['limit'] > 0 && $forData['limit'] <= 500) {
+            $query .= " LIMIT " . intval($forData['limit']);
+        }
+
+        // Prepare and execute query
+        $stmt = $this->forConnection->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Query prepare failed: " . $this->forConnection->error, 500);
+        }
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $products = [];
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+
+        // Check if searching by Shoe_ID and no results found
+        if (isset($forData['search']['Shoe_ID']) && count($products) === 0) {
+            throw new Exception("No product found with the specified Shoe_ID", 404);
+        }
+
+        echo json_encode([
+            "status" => "success",
+            "timestamp" => time(),
+            "data" => $products
+        ]);
+    } catch (Exception $forError) {
+        $this->handleError($forError);
+    }
+}
+
 ?>
 
 
