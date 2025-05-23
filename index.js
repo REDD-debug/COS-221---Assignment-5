@@ -169,3 +169,5 @@ function displayProducts(products) {
     });
     
     html += '</div>';
+    productsContainer.innerHTML = html;
+}
