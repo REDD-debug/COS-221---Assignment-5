@@ -209,3 +209,28 @@ function populateFilterOptions(products) {
         sizeSelect.appendChild(option);
     });
 }
+
+
+// Change page and fetch new products
+function changePage(newPage) {
+    if (newPage < 1 || newPage > Math.ceil(totalProducts / productsPerPage)) return;
+    
+    currentPage = newPage;
+    fetchProducts();
+    
+    // Scroll to top of products
+    window.scrollTo({
+        top: productsContainer.offsetTop - 20,
+        behavior: 'smooth'
+    });
+}
+
+// Get the modal
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
