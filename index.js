@@ -171,3 +171,41 @@ function displayProducts(products) {
     html += '</div>';
     productsContainer.innerHTML = html;
 }
+
+
+// Populate filter dropdowns with available options
+function populateFilterOptions(products) {
+    const brands = new Set();
+    const colors = new Set();
+    const sizes = new Set();
+    
+    products.forEach(product => {
+        if (product.Brand_ID) brands.add(product.Brand_ID);
+        if (product.Color) colors.add(product.Color);
+        if (product.Size) sizes.add(product.Size);
+    });
+    
+    // Populate brand filter
+    Array.from(brands).sort().forEach(brand => {
+        const option = document.createElement('option');
+        option.value = brand;
+        option.textContent = brand;
+        brandSelect.appendChild(option);
+    });
+    
+    // Populate color filter
+    Array.from(colors).sort().forEach(color => {
+        const option = document.createElement('option');
+        option.value = color;
+        option.textContent = color;
+        colorSelect.appendChild(option);
+    });
+    
+    // Populate size filter
+    Array.from(sizes).sort((a, b) => a - b).forEach(size => {
+        const option = document.createElement('option');
+        option.value = size;
+        option.textContent = size;
+        sizeSelect.appendChild(option);
+    });
+}
