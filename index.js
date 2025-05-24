@@ -234,3 +234,51 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
 }
+
+
+// Update pagination controls
+function updatePagination() {
+    const totalPages = Math.ceil(totalProducts / productsPerPage);
+    
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    // Previous button
+    html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
+    
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        html += `<button onclick="changePage(1)">1</button>`;
+        if (startPage > 2) {
+            html += `<button disabled>...</button>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="changePage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<button disabled>...</button>`;
+        }
+        html += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+    }
+    
+    // Next button
+    html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
+    
+    paginationContainer.innerHTML = html;
+}
