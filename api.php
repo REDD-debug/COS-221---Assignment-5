@@ -138,30 +138,6 @@ class UserAPI{
         }
     }
 
-    private function handleError(Exception $forError){
-        http_response_code($forError->getCode() ?: 500);
-        echo json_encode([
-            "status" => "error",
-            "timestamp" => time(),
-            "message" => $forError->getMessage()
-        ]);
-        error_log("API Error: " . $forError->getMessage());
-    }
-}
-try {
-    UserAPI::getInstance()->handleRequest();
-} catch (Exception $forError) {
-    http_response_code(500);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Internal server error",
-        "timestamp" => time()
-    ]);
-    error_log("Critical API Error: " . $forError->getMessage());
-}
-
-
-
     private function registerUser($name, $surname, $email, $password, $user_type){
         try {
             $errors = [];
@@ -406,6 +382,29 @@ try {
     } catch (Exception $forError) {
         $this->handleError($forError);
     }
+}
+
+
+    private function handleError(Exception $forError){
+        http_response_code($forError->getCode() ?: 500);
+        echo json_encode([
+            "status" => "error",
+            "timestamp" => time(),
+            "message" => $forError->getMessage()
+        ]);
+        error_log("API Error: " . $forError->getMessage());
+    }
+}
+try {
+    UserAPI::getInstance()->handleRequest();
+} catch (Exception $forError) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Internal server error",
+        "timestamp" => time()
+    ]);
+    error_log("Critical API Error: " . $forError->getMessage());
 }
 
 ?>
