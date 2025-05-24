@@ -1,18 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Poppins:wght@400;600&display=swap');
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  display: flex;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  background-image: url('antipolygon-youtube-l6SwTEW2i9I-unsplash.jpg'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* Sidebar filter panel */
 .sidebar {
   width: 250px;
-  background-color: #f7f7f7;
+   background-color: rgba(247, 247, 247, 0.85); /* Slight transparency */
   padding: 20px;
   border-right: 1px solid #ccc;
   height: 100vh;
   box-sizing: border-box;
-  position: fixed;
+  font-family: 'Merriweather', serif;
 }
 
 .sidebar h2 {
