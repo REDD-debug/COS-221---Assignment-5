@@ -1,10 +1,10 @@
 <?php
 class Database {
     private $forConnection;
-    private $forHost = "wheatley.cs.up.ac.za";
-    private  $forUser = "u23538199";
-    private $forPassword = "P4ZYT2THXRERAPD622SFGEVMUZT5VE66";
-    private $forDatabase = "u23538199_products";
+    private $forHost = "localhost";
+    private  $forUser = "root";
+    private $forPassword = "karishma";
+    private $forDatabase = "shoes";
     
     private function __construct() {
         $this->forConnection = new mysqli($this->forHost, $this->forUser, $this->forPassword, $this->forDatabase);
