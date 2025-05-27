@@ -82,6 +82,9 @@ class UserAPI{
                 case 'AddRatingReview':
                     $this->addRatingReview($forData);
                     break;
+                case 'DeleteProduct':
+                    $this->deleteProduct($forData);
+                    break;
                 default:
                     throw new Exception("Unknown request type", 404);
             }
