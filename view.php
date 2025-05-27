@@ -58,3 +58,13 @@ session_start();
                     <div class="product-store-link">
                         <strong>Buy Now:</strong> <a id="product-buy-link" href="#" target="_blank">Visit Store</a>
                     </div>
+                   <ul class="characteristics">
+                        <li><strong>Brand:</strong> <span id="product-brand"></span></li>
+                        <li><strong>Color:</strong> <span id="product-color"></span></li>
+                        <li><strong>Size:</strong> <span id="product-size"></span></li>
+                        <li><strong>Release Date:</strong> <span id="product-release-date"></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
