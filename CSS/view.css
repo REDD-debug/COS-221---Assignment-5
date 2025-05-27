@@ -78,4 +78,29 @@ body {
     border-radius: 50%;
 }
 
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.product-info {
+    flex: 1;
+    padding: 20px;
+}
+
+.product-info h1 {
+    font-family: 'Merriweather', serif;
+    font-size: 2rem;
+    margin: 0 0 10px;
+    color: #2c3e50;
+}
+
+
 
