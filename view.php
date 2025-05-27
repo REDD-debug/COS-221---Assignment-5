@@ -68,3 +68,17 @@ session_start();
             </div>
         </div>
     </div>
+
+    <!-- Modal for Rating/Review Form -->
+    <div id="rating-review-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal">&times;</span>
+            <h2>Add Rating & Review</h2>
+            <div class="form-group">
+                <label for="rating-score"><strong>Rating (1-5):</strong></label>
+                <select id="rating-score" name="rating-score">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
