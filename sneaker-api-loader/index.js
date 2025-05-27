@@ -1,6 +1,6 @@
 // Configuration
 const API_URL = 'http://localhost/COS221/api.php';
-const API_KEY = '01f7356a50fcdef2ddef37c336dae321';
+const API_KEY = '9b61116806b6834df2059a37aa70aed3';
 
 let currentPage = 1;
 let totalProducts = 0;

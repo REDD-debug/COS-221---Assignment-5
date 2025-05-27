@@ -3,9 +3,9 @@ class Database {
     private $forConnection;
     private $forHost = "localhost";
     private  $forUser = "root";
-    private $forPassword = " ";
-    private $forDatabase = " ";
-    private $forPort = " ";
+    private $forPassword = "PaviReddy123 ";
+    private $forDatabase = "shoes ";
+    private $forPort = "3370";
 
 
 
