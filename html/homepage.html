@@ -4,18 +4,17 @@
   <meta charset="UTF-8">
   <title>Welcome to Our Website</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Poppins:wght@400;600&display=swap');
     body {
       font-family: 'Poppins', sans-serif;
-     background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       margin: 0;
       padding: 0;
       color: #333;
+      min-height: 100vh;
     }
-    
+
     .overlay {
-      
+      background-color: rgba(255, 255, 255, 0.95);
       min-height: 100vh;
       padding: 60px 20px;
       display: flex;
@@ -26,9 +25,9 @@
 
     h1 {
       font-size: 2.5rem;
-      color: #37262e; /* pink */
+      color: #a16884;
       margin-bottom: 20px;
-      font-family: 'Poppins', sans-serif;
+      text-align: center;
     }
 
     .container {
@@ -41,18 +40,17 @@
       padding: 15px 40px;
       font-size: 18px;
       text-decoration: none;
-      color: rgb(255, 255, 255);
-      background: linear-gradient(to right, #383b3d, #e34e99); /* grey to pink */
+      color: white;
+      background: linear-gradient(to right, #6c757d, #b47092);
       border-radius: 30px;
       border: none;
       transition: all 0.3s ease;
       cursor: pointer;
-        font-family: 'Poppins', sans-serif;
     }
 
     .button:hover {
       transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(229, 7, 118, 0.3);
+      box-shadow: 0 8px 25px rgba(180, 112, 146, 0.4);
     }
 
     .form-container {
@@ -63,37 +61,65 @@
       background-color: #fff;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(108, 117, 125, 0.2); /* soft grey shadow */
+      box-shadow: 0 10px 30px rgba(108, 117, 125, 0.3);
+    }
+
+    .form-container.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
       color: #6c757d;
+      margin-bottom: 20px;
+      text-align: center;
     }
 
-    input[type="text"],
+    input[type="email"],
     input[type="password"] {
       width: 100%;
       padding: 12px;
       margin: 12px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
       font-size: 16px;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #b47092;
     }
 
     input[type="submit"] {
       padding: 12px 25px;
       font-size: 16px;
-      background-color: #b8226d;
+      background: linear-gradient(to right, #b47092, #6c757d);
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       width: 100%;
-      margin-top: 10px;
+      margin-top: 15px;
+      transition: all 0.3s ease;
     }
 
     input[type="submit"]:hover {
-      background-color: #bf7498;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(180, 112, 146, 0.3);
+    }
+
+    input[type="submit"]:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .signup-button {
@@ -103,14 +129,10 @@
     }
 
     .signup-button .button {
-      background: linear-gradient(to right, #d7267f, #373738);
+      background: linear-gradient(to right, #d63384, #6c757d);
       padding: 12px 30px;
       border-radius: 25px;
       font-size: 17px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .error-message {
