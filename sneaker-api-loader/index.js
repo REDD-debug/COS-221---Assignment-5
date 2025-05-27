@@ -132,15 +132,19 @@ function displayProducts(products) {
 
     let html = '<div class="products-grid">';
 
-    products.forEach(product => {
+ products.forEach(product => {
         html += `
             <div class="product-card">
                 <div class="product-image">
                     <a href="../view.php?Shoe_ID=${product.Shoe_ID}"> 
                         <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
                     </a>
+                    <a href="../view.php?Shoe_ID=${product.Shoe_ID}"> 
+                        <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
+                    </a>
                 </div>
                 <div class="product-info">
+                    <h3 class="product-name">${product.Name || 'N/A'}</h3>
                     <h3 class="product-name">${product.Name || 'N/A'}</h3>
                     <p class="product-brand">Brand: ${product.Brand_ID || 'N/A'}</p>
                     <p>Color: ${product.Color || 'N/A'}</p>

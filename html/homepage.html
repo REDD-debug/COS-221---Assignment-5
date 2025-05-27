@@ -2,38 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
- 
-
+  <title>Welcome to Our Website</title>
   <style>
-   
-  body {
-  font-family: 'Poppins', sans-serif;
-  background-image: url('background.jpg'); /* Ensure this image is in the same directory */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed; /* Optional: keeps background in place on scroll */
-  margin: 0;
-  padding: 0;
-  color: #333;
-  min-height: 100vh;
-}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 0;
+      color: #333;
+      min-height: 100vh;
+    }
 
-
- .overlay {
-  /* Adjust transparency as needed */
-  min-height: 100vh;
-  padding: 60px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.95);
+      min-height: 100vh;
+      padding: 60px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
     h1 {
       font-size: 2.5rem;
-      color: #3b2530;
+      color: #a16884;
       margin-bottom: 20px;
       text-align: center;
     }
@@ -49,7 +41,7 @@
       font-size: 18px;
       text-decoration: none;
       color: white;
-      background: linear-gradient(to right, #28292a, #f12a8d);
+      background: linear-gradient(to right, #6c757d, #b47092);
       border-radius: 30px;
       border: none;
       transition: all 0.3s ease;
@@ -58,7 +50,7 @@
 
     .button:hover {
       transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(231, 93, 162, 0.4);
+      box-shadow: 0 8px 25px rgba(180, 112, 146, 0.4);
     }
 
     .form-container {
@@ -69,7 +61,7 @@
       background-color: #fff;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(44, 45, 46, 0.3);
+      box-shadow: 0 10px 30px rgba(108, 117, 125, 0.3);
     }
 
     .form-container.active {
@@ -83,7 +75,7 @@
     }
 
     h2 {
-      color: #343537;
+      color: #6c757d;
       margin-bottom: 20px;
       text-align: center;
     }
@@ -103,13 +95,13 @@
     input[type="email"]:focus,
     input[type="password"]:focus {
       outline: none;
-      border-color: #df4391;
+      border-color: #b47092;
     }
 
     input[type="submit"] {
       padding: 12px 25px;
       font-size: 16px;
-      background: linear-gradient(to right, #de3d8e, #262728);
+      background: linear-gradient(to right, #b47092, #6c757d);
       color: white;
       border: none;
       border-radius: 8px;
@@ -137,7 +129,7 @@
     }
 
     .signup-button .button {
-      background: linear-gradient(to right, #d63384, #28292a);
+      background: linear-gradient(to right, #d63384, #6c757d);
       padding: 12px 30px;
       border-radius: 25px;
       font-size: 17px;
@@ -174,13 +166,12 @@
     }
 
     .back-button:hover {
-      background: #2e2f30;
+      background: #5a6268;
     }
   </style>
 </head>
 <body>
   <div class="overlay">
-      <h1>Welcome to CompareIt</h1>
     <div class="container" id="mainContainer">
       <button class="button" onclick="showForm('admin')">Admin Login</button>
       <button class="button" onclick="showForm('customer')">Customer Login</button>

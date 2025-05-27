@@ -329,3 +329,24 @@ body {
 #pagination button.active {
   background-color: #c2185b;
 }
+
+
+/* ADDITION: Styles for remove button */
+.remove-button {
+    background: linear-gradient(to right, #e74c3c, #c0392b); /* Red gradient */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.remove-button:hover {
+    background: linear-gradient(to right, #c0392b, #a93226); /* Darker red on hover */
+}
