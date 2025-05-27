@@ -1,24 +1,29 @@
 <?php
 session_start();
+error_log("Session at start: " . print_r($_SESSION, true));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['api_key'])) {
+    $userType = isset($_POST['user_type']) ? trim($_POST['user_type']) : 'Customer';
+    
     $_SESSION['user'] = [
         'username' => htmlspecialchars($_POST['username']),
         'api_key' => $_POST['api_key'],
-        'user_type' => $_POST['user_type'] ?? 'Customer',
+        'user_type' => $userType,
         'logged_in' => true,
         'login_time' => time()
     ];
     
+    error_log("Session after POST: " . print_r($_SESSION['user'], true));
+    
     setcookie('apiKey', $_POST['api_key'], [
-        'expires' => time() + 86400, 
+        'expires' => time() + 86400,
         'path' => '/',
-        'secure' => isset($_SERVER['HTTPS']), 
+        'secure' => isset($_SERVER['HTTPS']),
         'httponly' => true,
         'samesite' => 'Strict'
     ]);
     
-    if ($_POST['user_type'] === 'Admin') {
+    if (strcasecmp($userType, 'Admin') === 0) {
         header("Location: http://localhost/COS221/html/admin_dashboard.php");
     } else {
         header("Location: http://localhost/COS221/html/index.php");
@@ -27,14 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 }
 
 if (isset($_SESSION['user']) && $_SESSION['user']['logged_in']) {
-    if ($_SESSION['user']['user_type'] === 'Admin') {
+    if (strcasecmp($_SESSION['user']['user_type'], 'Admin') === 0) {
         header("Location: http://localhost/COS221/html/admin_dashboard.php");
     } else {
         header("Location: http://localhost/COS221/html/index.php");
     }
     exit();
 }
-?><!DOCTYPE html>
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -119,9 +125,16 @@ if (isset($_SESSION['user']) && $_SESSION['user']['logged_in']) {
 
                 if (data.status === "success" && data.data && data.data[0]) {
                     const userData = data.data[0];
+                    const userType = userData.user_type ? userData.user_type.trim() : 'Customer';
+                    
+                    console.log("Form values:", {
+                        username: userData.name || email.split('@')[0],
+                        api_key: userData.apikey,
+                        user_type: userType
+                    });
                     
                     localStorage.setItem('apiKey', userData.apikey);
-                    localStorage.setItem('userType', userData.user_type);
+                    localStorage.setItem('userType', userType);
                     localStorage.setItem('userName', userData.name);
                     
                     document.cookie = `apiKey=${userData.apikey}; path=/; max-age=86400; Secure; SameSite=Strict`;
@@ -136,7 +149,7 @@ if (isset($_SESSION['user']) && $_SESSION['user']['logged_in']) {
                     hiddenForm.innerHTML = `
                         <input type="hidden" name="username" value="${userData.name || email.split('@')[0]}">
                         <input type="hidden" name="api_key" value="${userData.apikey}">
-                        <input type="hidden" name="user_type" value="${userData.user_type}">
+                        <input type="hidden" name="user_type" value="${userType}">
                     `;
                     
                     document.body.appendChild(hiddenForm);
@@ -163,6 +176,7 @@ if (isset($_SESSION['user']) && $_SESSION['user']['logged_in']) {
             messageEl.innerHTML = message;
             messageEl.className = type;
         }
+        
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('email').focus();
         });
