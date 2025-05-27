@@ -78,7 +78,7 @@ function registerUser(name, surname, email, password, userType) {
     .then(data => {
         if (data.status === "success") {
             if (confirm("You have successfully registered.")) {
-                window.location.href = "index.php";
+                window.location.href = "http://localhost/COS221/html/index.php";
             }            
         } else {
             showError("Registration failed: " + (data.message || "Unknown error"));
@@ -89,3 +89,4 @@ function registerUser(name, surname, email, password, userType) {
         showError("An error has occurred during registration.");
     });
 }
+
