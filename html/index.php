@@ -56,7 +56,7 @@
         </select>
       </div>
     
-      <button id="apply-filters" style="width: 100%;">Apply Filters</button>
+      <button id="apply-filters" >Apply Filters</button>
     </div>
     
     <div class="main-content">
@@ -173,7 +173,7 @@
       </div>
     </div>
     
-    <!-- <button onclick="document.getElementById('id01').style.display='block'" style="width:auto; position: fixed; bottom: 20px; right: 20px;">Login</button>
+    <button onclick="document.getElementById('id01').style.display='block'" style="width:auto; position: fixed; bottom: 20px; right: 20px;">Login</button>
     
     <div id="id01" class="modal">
       <form class="modal-content animate" action="../html/index.php" method="post">
@@ -199,7 +199,7 @@
           <span class="psw">Forgot <a href="#">password?</a></span>
         </div>
       </form>
-    </div> -->
+    </div>
     
     <script src="../sneaker-api-loader/index.js"></script>
     <script>

@@ -1,3 +1,4 @@
+// Configuration
 const API_URL = 'http://localhost/COS221/api.php';
 const API_KEY = '01f7356a50fcdef2ddef37c336dae321';
 

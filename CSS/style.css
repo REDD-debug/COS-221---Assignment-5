@@ -6,7 +6,7 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #f5f7fa;
   color: #333;
-  background-image: url('antipolygon-youtube-l6SwTEW2i9I-unsplash.jpg'); 
+  background-image: url('background.jpg'); 
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -36,6 +36,26 @@ body {
 
 .sidebar h2 {
   margin-top: 0;
+}
+
+#apply-filters {
+  background: linear-gradient(to right, #e91e63, #454545); /* pink to grey */
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#apply-filters:hover {
+  background: linear-gradient(to right, #d81b60, #3d3d3d); /* darker on hover */
+}
+#apply-filters {
+  width: 100%;
 }
 
 .filter-group {
@@ -155,115 +175,7 @@ body {
   height: auto;
 }
 
-input[type=text], input[type=password] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
 
-button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
-
-.imgcontainer {
-  text-align: center;
-  margin: 24px 0 12px 0;
-  position: relative;
-}
-
-img.avatar {
-  width: 40%;
-  border-radius: 50%;
-}
-
-.container {
-  padding: 16px;
-}
-
-span.psw {
-  float: right;
-  padding-top: 16px;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0,0,0);
-  background-color: rgba(0,0,0,0.4);
-  padding-top: 60px;
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 5% auto 15% auto;
-  border: 1px solid #888;
-  width: 80%;
-}
-
-.close {
-  position: absolute;
-  right: 25px;
-  top: 0;
-  color: #000;
-  font-size: 35px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: red;
-  cursor: pointer;
-}
-
-.animate {
-  -webkit-animation: animatezoom 0.6s;
-  animation: animatezoom 0.6s
-}
-
-@-webkit-keyframes animatezoom {
-  from {-webkit-transform: scale(0)} 
-  to {-webkit-transform: scale(1)}
-}
-  
-@keyframes animatezoom {
-  from {transform: scale(0)} 
-  to {transform: scale(1)}
-}
-
-@media screen and (max-width: 300px) {
-  span.psw {
-     display: block;
-     float: none;
-  }
-  .cancelbtn {
-     width: 100%;
-  }
-}
 
 /* Additional styles for the product grid */
 .products-grid {
@@ -377,3 +289,43 @@ span.psw {
   }
 }
 
+/* Base styles for all buttons */
+#pagination button {
+  padding: 8px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Disabled buttons (e.g. when on first/last page) */
+#pagination button:disabled {
+  background-color: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Previous and Next buttons */
+#pagination button:first-child,
+#pagination button:last-child {
+  background-color: #ccc;
+  color: #333;
+}
+
+/* Numbered page buttons */
+#pagination button:not(:first-child):not(:last-child):not(:disabled) {
+  background-color: #cb3164;
+  color: white;
+}
+
+/* Hover effect for numbered page buttons */
+#pagination button:not(:first-child):not(:last-child):not(:disabled):hover {
+  background-color: #ec407a;
+}
+
+/* Active page */
+#pagination button.active {
+  background-color: #c2185b;
+}
