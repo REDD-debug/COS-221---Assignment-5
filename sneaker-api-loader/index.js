@@ -1,6 +1,6 @@
 // Configuration
 const API_URL = 'http://localhost/COS221/api.php';
-const API_KEY = '9b61116806b6834df2059a37aa70aed3';
+const API_KEY = '01f7356a50fcdef2ddef37c336dae321';
 
 let currentPage = 1;
 let totalProducts = 0;
@@ -136,16 +136,18 @@ function displayProducts(products) {
         html += `
             <div class="product-card">
                 <div class="product-image">
-                <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
+                    <a href="../view.php?Shoe_ID=${product.Shoe_ID}"> 
+                        <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
+                    </a>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-name">${product.Name}</h3>
+                    <h3 class="product-name">${product.Name || 'N/A'}</h3>
                     <p class="product-brand">Brand: ${product.Brand_ID || 'N/A'}</p>
                     <p>Color: ${product.Color || 'N/A'}</p>
                     <p>Size: ${product.Size || 'N/A'}</p>
                     <p class="product-description">${product.Description || 'No description available.'}</p>
                     <p class="product-price">Price: $${product.Price !== undefined ? product.Price : 'N/A'}</p>
-                    ${product.buy_link ? `<a href="${product.buy_link}" class="buy-button" target="_blank">Buy Now</a>` : ''}
+                    ${product.buy_link ? `<a href="${product.buy_link}" target="_blank">${product.buy_link}</a>` : ''}
                 </div>
             </div>
         `;

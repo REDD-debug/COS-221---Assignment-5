@@ -15,7 +15,7 @@ echo '
 <script>
     localStorage.removeItem("apiKey");
     document.cookie = "apiKey=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "index.php";
+    window.location.href = "http://localhost/COS221/html/homepage.html";
 </script>
 ';
 exit();

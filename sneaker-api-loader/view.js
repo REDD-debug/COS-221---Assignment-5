@@ -2,7 +2,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const shoeId = urlParams.get('Shoe_ID');
 const apiUrl = 'api.php'; // Corrected to match file structure (same directory as view.php)
-const apiKey = '7df553402e530adbc1516099cf00c527'; 
+const apiKey = '01f7356a50fcdef2ddef37c336dae321'; 
 
 // Full-page loading screen
 function createFullPageLoadingText() {

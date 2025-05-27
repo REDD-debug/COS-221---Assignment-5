@@ -350,16 +350,9 @@ class UserAPI{
                              GROUP BY review.Shoe_ID) AS Reviews";
             }
             $query .= "
-                      FROM shoe_products sp 
-                      LEFT JOIN (
-                          SELECT *
-                          FROM pricelisting pl1
-                          WHERE pl1.Price_ID = (
-                              SELECT MIN(pl2.Price_ID)
-                              FROM pricelisting pl2
-                              WHERE pl2.Shoe_ID = pl1.Shoe_ID
-                          )
-                      ) pl ON sp.Shoe_ID = pl.Shoe_ID";
+                FROM shoe_products sp
+                LEFT JOIN pricelisting pl ON sp.Shoe_ID = pl.Shoe_ID
+                ";
 
             $params = [];
             $types = '';

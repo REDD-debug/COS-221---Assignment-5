@@ -1,6 +1,6 @@
 // Configuration
 const API_URL = 'http://localhost/COS221/api.php';
-const API_KEY = localStorage.getItem('apiKey') || '3e504e63ec49bdfaaba32a5bb993759b';
+const API_KEY = localStorage.getItem('apiKey') || '01f7356a50fcdef2ddef37c336dae321';
 
 let currentPage = 1;
 let totalProducts = 0;
