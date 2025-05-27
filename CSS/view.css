@@ -302,5 +302,13 @@ body {
         padding: 10px;
     }
 
+    .product-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .product-price {
+        font-size: 1.2rem;
+    }
+}
 
 
