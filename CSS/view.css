@@ -280,5 +280,27 @@ body {
     transition: opacity 0.3s;
 }
 
+.modal-content button:hover {
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .product-view {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .carousel {
+        max-width: 100%;
+    }
+
+    .carousel-images {
+        height: 300px;
+    }
+
+    .product-info {
+        padding: 10px;
+    }
+
 
 
