@@ -165,5 +165,30 @@ body {
     font-weight: 600;
 }
 
+.product-store-link a:hover {
+    text-decoration: underline;
+}
+
+.product-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: #e74c3c;
+    background-color: #fde8e8;
+    border-radius: 8px;
+}
+
 
 
