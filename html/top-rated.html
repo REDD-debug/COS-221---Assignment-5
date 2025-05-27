@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Rated Products</title>
+    <style>
+        body {
+        text-align: center;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            justify-items: center;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.3s;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .product-name {
+            font-size: 1.1rem;
+            margin: 10px 0 5px;
+        }
+        .product-brand {
+            color: #666;
+            font-weight: bold;
+        }
+        .product-rating {
+            color: #ff9800;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .back-button-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button-container">
+        <a href="http://localhost/COS221/html/index.php" class="back-button">← Back</a>
+    </div>
+
+    <h1>Top Rated Products</h1>
+    <div id="top-rated-products" class="products-grid">
+        <div class="loading">Loading top rated products...</div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost/COS221/api.php';
+        const API_KEY = '01f7356a50fcdef2ddef37c336dae321';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchTopRatedProducts();
+        });
+
+        async function fetchTopRatedProducts() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: "GetTopRatedProducts",
+                        apikey: API_KEY
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayTopRatedProducts(data.data);
+                } else {
+                    throw new Error(data.message || 'Failed to fetch top rated products');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('top-rated-products').innerHTML = 
+                    `<div class="error">Error loading products: ${error.message}</div>`;
+            }
+        }
+
+        function displayTopRatedProducts(products) {
+            const container = document.getElementById('top-rated-products');
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="error">No top rated products found.</div>';
+                return;
+            }
+
+            let html = '';
+            products.forEach(product => {
+                html += `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                                 alt="${product.Name}">
+                        </div>
+                        <h3 class="product-name">${product.Name}</h3>
+                        <p class="product-brand">${product.Brand_ID}</p>
+                        <p>Color: ${product.Color || 'N/A'}</p>
+                        <p class="product-rating">Rating: ${product.AverageRating} ★</p>
+                        <p class="product-description">${product.Description || 'No description available.'}</p>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
