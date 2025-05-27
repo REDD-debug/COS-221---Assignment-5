@@ -1,8 +1,6 @@
-// Configuration
 const API_URL = 'http://localhost/COS221/api.php';
 const API_KEY = '01f7356a50fcdef2ddef37c336dae321';
 
-// Global variables
 let currentPage = 1;
 let totalProducts = 0;
 let productsPerPage = 12;
@@ -15,7 +13,6 @@ let filters = {
     limit: 12
 };
 
-// DOM elements
 const productsContainer = document.getElementById('products-container');
 const paginationContainer = document.getElementById('pagination');
 const searchInput = document.getElementById('search');
@@ -26,19 +23,15 @@ const sortSelect = document.getElementById('sort');
 const limitSelect = document.getElementById('limit');
 const applyFiltersBtn = document.getElementById('apply-filters');
 
-// Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
-    // Load products
     fetchProducts();
     
-    // Set up event listeners
     applyFiltersBtn.addEventListener('click', () => {
         currentPage = 1;
         updateFilters();
         fetchProducts();
     });
     
-    // Allow Enter key to apply filters
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             currentPage = 1;
@@ -48,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Update filters from form inputs
 function updateFilters() {
     filters = {
         search: searchInput.value.trim(),
@@ -63,13 +55,10 @@ function updateFilters() {
     productsPerPage = filters.limit;
 }
 
-// Fetch products from API
 async function fetchProducts() {
     try {
-        // Show loading state
         productsContainer.innerHTML = '<div class="loading">Loading products...</div>';
         
-        // Prepare request data
         const requestData = {
             type: "GetAllProducts",
             apikey: API_KEY,
@@ -83,7 +72,6 @@ async function fetchProducts() {
             order: filters.order
         };
         
-        // Add search filters if they exist
         if (filters.search) {
             requestData.search = {
                 Name: filters.search
@@ -106,7 +94,6 @@ async function fetchProducts() {
             requestData.search.Size = filters.size;
         }
         
-        // Make API request
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -118,16 +105,12 @@ async function fetchProducts() {
         const data = await response.json();
         
         if (data.status === 'success') {
-            // Display products
             displayProducts(data.data);
             
-            // Update total products count (this would come from the API)
-            totalProducts = data.data.length * 3; // Placeholder - we would should get the actual total from our API
+            totalProducts = data.data.length * 3;
             
-            // Update pagination
             updatePagination();
             
-            // Populate filter options if not already done
             if (brandSelect.options.length <= 1) {
                 populateFilterOptions(data.data);
             }
@@ -140,7 +123,6 @@ async function fetchProducts() {
     }
 }
 
-// Display products in the grid
 function displayProducts(products) {
     if (products.length === 0) {
         productsContainer.innerHTML = '<div class="error">No products found matching your criteria.</div>';
@@ -172,8 +154,6 @@ function displayProducts(products) {
     productsContainer.innerHTML = html;
 }
 
-
-// Populate filter dropdowns with available options
 function populateFilterOptions(products) {
     const brands = new Set();
     const colors = new Set();
@@ -185,7 +165,6 @@ function populateFilterOptions(products) {
         if (product.Size) sizes.add(product.Size);
     });
     
-    // Populate brand filter
     Array.from(brands).sort().forEach(brand => {
         const option = document.createElement('option');
         option.value = brand;
@@ -193,7 +172,6 @@ function populateFilterOptions(products) {
         brandSelect.appendChild(option);
     });
     
-    // Populate color filter
     Array.from(colors).sort().forEach(color => {
         const option = document.createElement('option');
         option.value = color;
@@ -201,7 +179,6 @@ function populateFilterOptions(products) {
         colorSelect.appendChild(option);
     });
     
-    // Populate size filter
     Array.from(sizes).sort((a, b) => a - b).forEach(size => {
         const option = document.createElement('option');
         option.value = size;
@@ -210,33 +187,26 @@ function populateFilterOptions(products) {
     });
 }
 
-
-// Change page and fetch new products
 function changePage(newPage) {
     if (newPage < 1 || newPage > Math.ceil(totalProducts / productsPerPage)) return;
     
     currentPage = newPage;
     fetchProducts();
     
-    // Scroll to top of products
     window.scrollTo({
         top: productsContainer.offsetTop - 20,
         behavior: 'smooth'
     });
 }
 
-// Get the modal
 var modal = document.getElementById('id01');
 
-// When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
   }
 }
 
-
-// Update pagination controls
 function updatePagination() {
     const totalPages = Math.ceil(totalProducts / productsPerPage);
     
@@ -247,10 +217,8 @@ function updatePagination() {
     
     let html = '';
     
-    // Previous button
     html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
     
-    // Page numbers
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -277,7 +245,6 @@ function updatePagination() {
         html += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
     }
     
-    // Next button
     html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
     
     paginationContainer.innerHTML = html;
