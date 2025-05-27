@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <title>Welcome to Our Website</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Poppins:wght@400;600&display=swap');
     body {
       font-family: 'Poppins', sans-serif;
-      background: url('antipolygon-youtube-l6SwTEW2i9I-unsplash') no-repeat center center fixed;
+     background: url('background.jpg') no-repeat center center fixed;
       background-size: cover;
       margin: 0;
       padding: 0;
       color: #333;
     }
-
+    
     .overlay {
-      background-color: rgba(255, 255, 255, 0.85);
+      
       min-height: 100vh;
       padding: 60px 20px;
       display: flex;
@@ -25,8 +26,9 @@
 
     h1 {
       font-size: 2.5rem;
-      color: #a16884; /* pink */
+      color: #37262e; /* pink */
       margin-bottom: 20px;
+      font-family: 'Poppins', sans-serif;
     }
 
     .container {
@@ -39,17 +41,18 @@
       padding: 15px 40px;
       font-size: 18px;
       text-decoration: none;
-      color: white;
-      background: linear-gradient(to right, #6c757d, #b47092); /* grey to pink */
+      color: rgb(255, 255, 255);
+      background: linear-gradient(to right, #383b3d, #e34e99); /* grey to pink */
       border-radius: 30px;
       border: none;
       transition: all 0.3s ease;
       cursor: pointer;
+        font-family: 'Poppins', sans-serif;
     }
 
     .button:hover {
       transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+      box-shadow: 0 5px 15px rgba(229, 7, 118, 0.3);
     }
 
     .form-container {
@@ -80,7 +83,7 @@
     input[type="submit"] {
       padding: 12px 25px;
       font-size: 16px;
-      background-color: #bd7398;
+      background-color: #b8226d;
       color: white;
       border: none;
       border-radius: 6px;
@@ -100,55 +103,190 @@
     }
 
     .signup-button .button {
-      background: linear-gradient(to right, #d63384, #6c757d);
+      background: linear-gradient(to right, #d7267f, #373738);
       padding: 12px 30px;
       border-radius: 25px;
       font-size: 17px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .error-message {
+      color: #dc3545;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .success-message {
+      color: #155724;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .back-button {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .back-button:hover {
+      background: #5a6268;
     }
   </style>
 </head>
 <body>
   <div class="overlay">
-    <h1>Welcome! Choose Your Role</h1>
-
-    <div class="container">
-      <button class="button" onclick="showForm('admin')">Admin User</button>
-      <button class="button" onclick="showForm('casual')">Casual User</button>
+    <div class="container" id="mainContainer">
+      <button class="button" onclick="showForm('admin')">Admin Login</button>
+      <button class="button" onclick="showForm('customer')">Customer Login</button>
     </div>
 
-    <!-- Admin Login Form -->
     <div id="adminForm" class="form-container">
+      <button class="back-button" onclick="showMain()">← Back</button>
       <h2>Admin Login</h2>
-      <form action="../login.php" method="POST">
-        <input type="hidden" name="role" value="admin">
-        <input type="text" name="username" placeholder="Admin Username" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <input type="submit" value="Login">
+      <form id="adminLoginForm">
+        <input type="email" name="email" placeholder="Admin Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="submit" value="Login as Admin">
+        <div id="adminMessage"></div>
       </form>
     </div>
 
-    <!-- Casual User Login Form -->
-    <div id="casualForm" class="form-container">
-      <h2>Casual User Login</h2>
-      <form action="../login.php" method="POST">
-        <input type="hidden" name="role" value="casual">
-        <input type="text" name="username" placeholder="Username" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
+    <div id="customerForm" class="form-container">
+      <button class="back-button" onclick="showMain()">← Back</button>
+      <h2>Customer Login</h2>
+      <form id="customerLoginForm">
+        <input type="email" name="email" placeholder="Email Address" required>
+        <input type="password" name="password" placeholder="Password" required>
         <input type="submit" value="Login">
+        <div id="customerMessage"></div>
       </form>
     </div>
   </div>
 
   <div class="signup-button">
-    <a href="../signup.php">
+    <a href="http://localhost/COS221/signup.php">
       <button class="button">Don't have an account? Sign Up</button>
     </a>
   </div>
 
   <script>
     function showForm(userType) {
-      document.getElementById('adminForm').style.display = (userType === 'admin') ? 'block' : 'none';
-      document.getElementById('casualForm').style.display = (userType === 'casual') ? 'block' : 'none';
+      document.getElementById('mainContainer').style.display = 'none';
+      document.getElementById('adminForm').classList.remove('active');
+      document.getElementById('customerForm').classList.remove('active');
+      
+      if (userType === 'admin') {
+        document.getElementById('adminForm').classList.add('active');
+      } else if (userType === 'customer') {
+        document.getElementById('customerForm').classList.add('active');
+      }
+    }
+
+    function showMain() {
+      document.getElementById('adminForm').classList.remove('active');
+      document.getElementById('customerForm').classList.remove('active');
+      document.getElementById('mainContainer').style.display = 'block';
+      document.getElementById('adminMessage').innerHTML = '';
+      document.getElementById('customerMessage').innerHTML = '';
+    }
+
+    document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      await handleLogin(e, 'admin', 'adminMessage');
+    });
+
+    document.getElementById('customerLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      await handleLogin(e, 'customer', 'customerMessage');
+    });
+
+    async function handleLogin(e, userType, messageElementId) {
+      const form = e.target;
+      const email = form.email.value;
+      const password = form.password.value;
+      const messageEl = document.getElementById(messageElementId);
+      const submitBtn = form.querySelector('input[type="submit"]');
+      messageEl.innerHTML = '';
+      
+      if (!email.includes('@') || !email.includes('.')) {
+        showMessage(messageEl, 'Please enter a valid email address', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage(messageEl, 'Password must be at least 6 characters long', 'error');
+        return;
+      }
+      
+      submitBtn.disabled = true;
+      submitBtn.value = 'Logging in...';
+      
+      try {
+        const response = await fetch('http://localhost/COS221/api.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: "Login",
+            email: email,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        if (data.status === "success") {
+          localStorage.setItem('apiKey', data.data[0].apikey);
+          document.cookie = `apiKey=${data.data[0].apikey}; path=/; max-age=86400; Secure; SameSite=Strict`;
+          
+          showMessage(messageEl, 'Login successful! Redirecting...', 'success');
+          const hiddenForm = document.createElement('form');
+          hiddenForm.method = 'POST';
+          hiddenForm.action = 'http://localhost/COS221/login.php';
+          hiddenForm.style.display = 'none';
+          
+          hiddenForm.innerHTML = `
+            <input type="hidden" name="username" value="${email.split('@')[0]}">
+            <input type="hidden" name="api_key" value="${data.data[0].apikey}">
+            <input type="hidden" name="user_type" value="${userType}">
+          `;
+          
+          document.body.appendChild(hiddenForm);
+          setTimeout(() => {
+            hiddenForm.submit();
+          }, 1500);
+          
+        } else {
+          showMessage(messageEl, data.message || 'Invalid credentials. Please check your email and password.', 'error');
+        }
+      } catch (error) {
+        showMessage(messageEl, 'Network error. Please check your connection and try again.', 'error');
+        console.error('Login error:', error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.value = userType === 'admin' ? 'Login as Admin' : 'Login';
+      }
+    }
+
+    function showMessage(element, message, type) {
+      element.innerHTML = `<div class="${type}-message">${message}</div>`;
     }
   </script>
 </body>
