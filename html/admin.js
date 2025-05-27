@@ -158,3 +158,103 @@ function displayProducts(products) {
     productsContainer.innerHTML = html;
 }
 
+function populateFilterOptions(products) {
+    const brands = new Set();
+    const colors = new Set();
+    const sizes = new Set();
+    
+    products.forEach(product => {
+        if (product.Brand_ID) brands.add(product.Brand_ID);
+        if (product.Color) colors.add(product.Color);
+        if (product.Size) sizes.add(product.Size);
+    });
+    
+    Array.from(brands).sort().forEach(brand => {
+        const option = document.createElement('option');
+        option.value = brand;
+        option.textContent = brand;
+        brandSelect.appendChild(option);
+    });
+    
+    Array.from(colors).sort().forEach(color => {
+        const option = document.createElement('option');
+        option.value = color;
+        option.textContent = color;
+        colorSelect.appendChild(option);
+    });
+    
+    Array.from(sizes).sort((a, b) => a - b).forEach(size => {
+        const option = document.createElement('option');
+        option.value = size;
+        option.textContent = size;
+        sizeSelect.appendChild(option);
+    });
+}
+
+async function removeProduct(shoeId) {
+    if (!confirm('Are you sure you want to remove this product from the view? This will be undone on refresh.')) {
+        return;
+    }
+
+    // Find and remove the product card from the DOM
+    const productCard = document.querySelector(`.product-card [onclick="removeProduct('${shoeId}')"]`).closest('.product-card');
+    if (productCard) {
+        productCard.style.display = 'none';
+        alert('Product removed !');
+    }
+}
+
+function changePage(newPage) {
+    if (newPage < 1 || newPage > Math.ceil(totalProducts / productsPerPage)) return;
+    
+    currentPage = newPage;
+    fetchProducts();
+    
+    window.scrollTo({
+        top: productsContainer.offsetTop - 20,
+        behavior: 'smooth'
+    });
+}
+
+function updatePagination() {
+    const totalPages = Math.ceil(totalProducts / productsPerPage);
+    
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
+    
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        html += `<button onclick="changePage(1)">1</button>`;
+        if (startPage > 2) {
+            html += `<button disabled>...</button>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="changePage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<button disabled>...</button>`;
+        }
+        html += `<button onclick="changePage(${totalPages})">${totalPages}</button>`;
+    }
+    
+    html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
+    
+    paginationContainer.innerHTML = html;
+}
