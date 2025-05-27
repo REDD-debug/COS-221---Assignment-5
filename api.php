@@ -71,36 +71,10 @@ class UserAPI{
                     );
                     break;
                 case 'Login':
-                    try {
-                        if (empty($forData['email']) || empty($forData['password'])) {
-                            throw new Exception("Your email and password is required", 400);
-                        }
-                
-                        $stmt = $this->forConnection->prepare("SELECT id, api_key, password, forSalt FROM user_info WHERE email = ?");
-                        $stmt->bind_param("s", $forData['email']);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                
-                        if ($result->num_rows > 0) {
-                            $user = $result->fetch_assoc();
-                            
-                            $hashed_input = hash("sha256", $user['forSalt'] . $forData['password']);
-                            
-                            if ($hashed_input === $user['password']) {
-                                echo json_encode([
-                                    "status" => "success",
-                                    "timestamp" => time(),
-                                    "data" => [["apikey" => $user['api_key']]]
-                                ]);
-                            } else {
-                                throw new Exception("The credentials are invalid", 401);
-                            }
-                        } else {
-                            throw new Exception("The credentials are invalid", 401);
-                        }
-                    } catch (Exception $e) {
-                        $this->handleError($e);
-                    }
+                    $this->loginUser($forData);
+                    break;
+                case 'GetTopRatedProducts':
+                    $this->getTopRatedProducts($forData);
                     break;
                 case 'GetAllProducts':
                     $this->getAllProducts($forData);
@@ -138,6 +112,54 @@ class UserAPI{
         }
     }
 
+    private function loginUser($forData) {
+        try {
+            if (empty($forData['email']) || empty($forData['password'])) {
+                throw new Exception("Email and password are required", 400);
+            }
+
+            if (!filter_var($forData['email'], FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("Invalid email format", 400);
+            }
+
+            $stmt = $this->forConnection->prepare("SELECT id, name, surname, email, api_key, password, forSalt, type FROM user_info WHERE email = ?");
+            if (!$stmt) {
+                throw new Exception("Database preparation failed", 500);
+            }
+
+            $stmt->bind_param("s", $forData['email']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows === 0) {
+                throw new Exception("No account found with this email address. Please check your email or sign up for a new account.", 401);
+            }
+
+            $user = $result->fetch_assoc();
+            $hashed_input = hash("sha256", $user['forSalt'] . $forData['password']);
+            
+            if ($hashed_input !== $user['password']) {
+                throw new Exception("Incorrect password. Please try again.", 401);
+            }
+
+            echo json_encode([
+                "status" => "success",
+                "timestamp" => time(),
+                "data" => [[
+                    "apikey" => $user['api_key'],
+                    "user_id" => $user['id'],
+                    "name" => $user['name'],
+                    "surname" => $user['surname'],
+                    "email" => $user['email'],
+                    "user_type" => $user['type']
+                ]]
+            ]);
+
+        } catch (Exception $e) {
+            $this->handleError($e);
+        }
+    }
+
     private function registerUser($name, $surname, $email, $password, $user_type){
         try {
             $errors = [];
@@ -152,12 +174,12 @@ class UserAPI{
             }
 
             if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/', $password)){
-                $errors[] = "You password must be 8+ chars with uppercase, lowercase, number and symbol";
+                $errors[] = "Password must be 8+ chars with uppercase, lowercase, number and symbol";
             }
 
-            $valid_types = ["Customer"];
+            $valid_types = ["Customer", "Admin"];
             if (!in_array($user_type, $valid_types)) {
-                $errors[] = "Invalid user type";
+                $errors[] = "Invalid user type. Must be Customer or Admin";
             }
 
             if (!empty($errors)){
@@ -176,10 +198,9 @@ class UserAPI{
 
             if ($checking->get_result()->num_rows > 0){
                 $checking->close();
-                throw new Exception("Email already exists", 409);
+                throw new Exception("An account with this email already exists. Please use a different email or try logging in.", 409);
             }
             $checking->close();
-
             $api_key = bin2hex(random_bytes(16));
             $salt = bin2hex(random_bytes(16));
             $hashed_password = hash("sha256", $salt . $password);
@@ -216,8 +237,12 @@ class UserAPI{
 
             echo json_encode([
                 "status" => "success",
+                "message" => "Registration successful",
                 "timestamp" => time(),
-                "data" => ["apikey" => $api_key]
+                "data" => [
+                    "apikey" => $api_key,
+                    "user_type" => $user_type
+                ]
             ]);
 
         } catch (Exception $forError){
@@ -226,164 +251,215 @@ class UserAPI{
         }
     }
 
-    
-
-      private function getAllProducts($forData) {
-    try {
-        if (!isset($forData['type']) || !is_string($forData['type']) || $forData['type'] !== "GetAllProducts") {
-            throw new Exception("Missing or invalid 'type'. Expected 'GetAllProducts'.", 400);
-        }
-
-        if (!isset($forData['apikey']) || !is_string($forData['apikey']) || trim($forData['apikey']) === '') {
-            throw new Exception("Missing or invalid 'apikey'", 400);
-        }
-
-        if (!isset($forData['return']) || !is_array($forData['return']) || empty($forData['return'])) {
-            throw new Exception("Missing or invalid 'return' field", 400);
-        }
-
-        // Verify API key
-        $apiKey = $forData['apikey'];
-        $userCheck = $this->forConnection->prepare("SELECT id FROM user_info WHERE api_key = ?");
-        $userCheck->bind_param("s", $apiKey);
-        $userCheck->execute();
-        $userResult = $userCheck->get_result();
-        if ($userResult->num_rows === 0) {
-            throw new Exception("Invalid API key", 401);
-        }
-
-        // Allowed fields
-        $allowedShoeFields = [
-            "Shoe_ID", "Name", "Brand_ID", "Color", "Size", "User_ID", 
-            "image_URL", "Release_Date", "Description"
-        ];
-
-        $allowedPriceFields = [
-            "Price_ID", "Shoe_ID", "Price", "Retailer_ID", "buy_link"
-        ];
-
-        // Validate requested fields
-        $shoeFields = [];
-        $priceFields = [];
-        foreach ($forData['return'] as $field) {
-            if (in_array($field, $allowedShoeFields)) {
-                $shoeFields[] = "sp.`$field`";
-            } elseif (in_array($field, $allowedPriceFields)) {
-                $priceFields[] = "pl.`$field`";
-            } else {
-                throw new Exception("Invalid field requested in 'return': '$field'", 400);
-            }
-        }
-
-        if (empty($shoeFields) && empty($priceFields)) {
-            throw new Exception("No valid return fields specified", 400);
-        }
-
-        // SELECT clause
-        $selectFields = array_merge($shoeFields, $priceFields);
-        $selectClause = implode(", ", $selectFields);
-
-        // Subquery to get only one price row per product (lowest Price_ID)
-        $query = "SELECT $selectClause 
-                  FROM shoe_products sp 
-                  LEFT JOIN (
-                      SELECT *
-                      FROM pricelisting pl1
-                      WHERE pl1.Price_ID = (
-                          SELECT MIN(pl2.Price_ID)
-                          FROM pricelisting pl2
-                          WHERE pl2.Shoe_ID = pl1.Shoe_ID
-                      )
-                  ) pl ON sp.Shoe_ID = pl.Shoe_ID";
-
-        $params = [];
-        $types = '';
-        $where = [];
-
-        // Handle search
-        if (isset($forData['search']) && is_array($forData['search'])) {
-            foreach ($forData['search'] as $col => $val) {
-                if (in_array($col, $allowedShoeFields)) {
-                    $tablePrefix = "sp.";
-                } elseif (in_array($col, $allowedPriceFields)) {
-                    $tablePrefix = "pl.";
-                } else {
-                    continue;
-                }
-
-                $isFuzzy = isset($forData['fuzzy']) && $forData['fuzzy'] === true;
-                if ($isFuzzy) {
-                    $where[] = "$tablePrefix`$col` LIKE ?";
-                    $params[] = '%' . $val . '%';
-                } else {
-                    $where[] = "$tablePrefix`$col` = ?";
-                    $params[] = $val;
-                }
-                $types .= 's';
-            }
-        }
-
-        if (!empty($where)) {
-            $query .= " WHERE " . implode(" AND ", $where);
-        }
-
-        // Handle sorting
-        if (isset($forData['sort'])) {
-            $sortField = $forData['sort'];
-            if (in_array($sortField, $allowedShoeFields)) {
-                $tablePrefix = "sp.";
-            } elseif (in_array($sortField, $allowedPriceFields)) {
-                $tablePrefix = "pl.";
-            } else {
-                throw new Exception("Invalid sort field: '$sortField'", 400);
-            }
-
-            $order = isset($forData['order']) ? strtoupper($forData['order']) : "ASC";
-            if (!in_array($order, ["ASC", "DESC"])) {
-                throw new Exception("Invalid order value: '$order'. Must be 'ASC' or 'DESC'.", 400);
-            }
-
-            $query .= " ORDER BY $tablePrefix`$sortField` $order";
-        }
-
-        // Handle limit
-        if (isset($forData['limit']) && is_numeric($forData['limit']) && $forData['limit'] > 0 && $forData['limit'] <= 500) {
-            $query .= " LIMIT " . intval($forData['limit']);
-        }
-
-        // Prepare and execute query
-        $stmt = $this->forConnection->prepare($query);
+    private function validateApiKey($apiKey) {
+        $stmt = $this->forConnection->prepare("SELECT id, name, email, type FROM user_info WHERE api_key = ?");
         if (!$stmt) {
-            throw new Exception("Query prepare failed: " . $this->forConnection->error, 500);
+            throw new Exception("Database preparation failed", 500);
         }
-
-        if (!empty($params)) {
-            $stmt->bind_param($types, ...$params);
-        }
-
+        
+        $stmt->bind_param("s", $apiKey);
         $stmt->execute();
         $result = $stmt->get_result();
-
-        $products = [];
-        while ($row = $result->fetch_assoc()) {
-            $products[] = $row;
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Invalid or expired API key", 401);
         }
-
-        // Check if searching by Shoe_ID and no results found
-        if (isset($forData['search']['Shoe_ID']) && count($products) === 0) {
-            throw new Exception("No product found with the specified Shoe_ID", 404);
-        }
-
-        echo json_encode([
-            "status" => "success",
-            "timestamp" => time(),
-            "data" => $products
-        ]);
-    } catch (Exception $forError) {
-        $this->handleError($forError);
+        
+        return $result->fetch_assoc();
     }
-}
 
+    private function getAllProducts($forData) {
+        try {
+            if (!isset($forData['type']) || !is_string($forData['type']) || $forData['type'] !== "GetAllProducts") {
+                throw new Exception("Missing or invalid 'type'. Expected 'GetAllProducts'.", 400);
+            }
+
+            if (!isset($forData['apikey']) || !is_string($forData['apikey']) || trim($forData['apikey']) === '') {
+                throw new Exception("Missing or invalid 'apikey'", 400);
+            }
+
+            $user = $this->validateApiKey($forData['apikey']);
+
+            if (!isset($forData['return']) || !is_array($forData['return']) || empty($forData['return'])) {
+                throw new Exception("Missing or invalid 'return' field", 400);
+            }
+
+            $allowedShoeFields = [
+                "Shoe_ID", "Name", "Brand_ID", "Color", "Size", "User_ID", 
+                "image_URL", "Release_Date", "Description"
+            ];
+
+            $allowedPriceFields = [
+                "Price_ID", "Shoe_ID", "Price", "Retailer_ID", "buy_link"
+            ];
+
+            $shoeFields = [];
+            $priceFields = [];
+            foreach ($forData['return'] as $field) {
+                if (in_array($field, $allowedShoeFields)) {
+                    $shoeFields[] = "sp.`$field`";
+                } elseif (in_array($field, $allowedPriceFields)) {
+                    $priceFields[] = "pl.`$field`";
+                } else {
+                    throw new Exception("Invalid field requested in 'return': '$field'", 400);
+                }
+            }
+
+            if (empty($shoeFields) && empty($priceFields)) {
+                throw new Exception("No valid return fields specified", 400);
+            }
+
+            $selectFields = array_merge($shoeFields, $priceFields);
+            $selectClause = implode(", ", $selectFields);
+
+            $query = "SELECT $selectClause 
+                    FROM shoe_products sp 
+                    LEFT JOIN (
+                        SELECT *
+                        FROM pricelisting pl1
+                        WHERE pl1.Price_ID = (
+                            SELECT MIN(pl2.Price_ID)
+                            FROM pricelisting pl2
+                            WHERE pl2.Shoe_ID = pl1.Shoe_ID
+                        )
+                    ) pl ON sp.Shoe_ID = pl.Shoe_ID";
+
+            $params = [];
+            $types = '';
+            $where = [];
+
+            if (isset($forData['search']) && is_array($forData['search'])) {
+                foreach ($forData['search'] as $col => $val) {
+                    if (in_array($col, $allowedShoeFields)) {
+                        $tablePrefix = "sp.";
+                    } elseif (in_array($col, $allowedPriceFields)) {
+                        $tablePrefix = "pl.";
+                    } else {
+                        continue;
+                    }
+
+                    $isFuzzy = isset($forData['fuzzy']) && $forData['fuzzy'] === true;
+                    if ($isFuzzy) {
+                        $where[] = "$tablePrefix`$col` LIKE ?";
+                        $params[] = '%' . $val . '%';
+                    } else {
+                        $where[] = "$tablePrefix`$col` = ?";
+                        $params[] = $val;
+                    }
+                    $types .= 's';
+                }
+            }
+
+            if (!empty($where)) {
+                $query .= " WHERE " . implode(" AND ", $where);
+            }
+
+            if (isset($forData['sort'])) {
+                $sortField = $forData['sort'];
+                if (in_array($sortField, $allowedShoeFields)) {
+                    $tablePrefix = "sp.";
+                } elseif (in_array($sortField, $allowedPriceFields)) {
+                    $tablePrefix = "pl.";
+                } else {
+                    throw new Exception("Invalid sort field: '$sortField'", 400);
+                }
+
+                $order = isset($forData['order']) ? strtoupper($forData['order']) : "ASC";
+                if (!in_array($order, ["ASC", "DESC"])) {
+                    throw new Exception("Invalid order value: '$order'. Must be 'ASC' or 'DESC'.", 400);
+                }
+
+                $query .= " ORDER BY $tablePrefix`$sortField` $order";
+            }
+
+            if (isset($forData['limit']) && is_numeric($forData['limit']) && $forData['limit'] > 0 && $forData['limit'] <= 500) {
+                $query .= " LIMIT " . intval($forData['limit']);
+            }
+
+            $stmt = $this->forConnection->prepare($query);
+            if (!$stmt) {
+                throw new Exception("Query prepare failed: " . $this->forConnection->error, 500);
+            }
+
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $products = [];
+            while ($row = $result->fetch_assoc()) {
+                $products[] = $row;
+            }
+
+            if (isset($forData['search']['Shoe_ID']) && count($products) === 0) {
+                throw new Exception("No product found with the specified Shoe_ID", 404);
+            }
+
+            echo json_encode([
+                "status" => "success",
+                "timestamp" => time(),
+                "data" => $products
+            ]);
+        } catch (Exception $forError) {
+            $this->handleError($forError);
+        }
+    }
+
+    private function getTopRatedProducts($forData) {
+        try {
+            if (!isset($forData['apikey'])) {
+                throw new Exception("API key is required", 400);
+            }
+
+            $user = $this->validateApiKey($forData['apikey']);
+
+            $query = "SELECT 
+                        sp.Shoe_ID, 
+                        sp.Name, 
+                        sp.Brand_ID, 
+                        sp.Color, 
+                        sp.image_URL, 
+                        sp.Description,
+                        AVG(r.Score) as AverageRating
+                    FROM shoe_products sp
+                    JOIN rating r ON sp.Shoe_ID = r.Shoe_ID
+                    GROUP BY sp.Shoe_ID
+                    ORDER BY AverageRating DESC
+                    LIMIT 5";
+
+            $stmt = $this->forConnection->prepare($query);
+            if (!$stmt) {
+                throw new Exception("Query preparation failed: " . $this->forConnection->error, 500);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $products = [];
+            while ($row = $result->fetch_assoc()) {
+                $products[] = [
+                    'Shoe_ID' => $row['Shoe_ID'],
+                    'Name' => $row['Name'],
+                    'Brand_ID' => $row['Brand_ID'],
+                    'Color' => $row['Color'],
+                    'image_URL' => $row['image_URL'],
+                    'Description' => $row['Description'],
+                    'AverageRating' => round($row['AverageRating'], 1)
+                ];
+            }
+
+            echo json_encode([
+                "status" => "success",
+                "timestamp" => time(),
+                "data" => $products
+            ]);
+
+        } catch (Exception $e) {
+            $this->handleError($e);
+        }
+    }
 
     private function handleError(Exception $forError){
         http_response_code($forError->getCode() ?: 500);
@@ -395,6 +471,7 @@ class UserAPI{
         error_log("API Error: " . $forError->getMessage());
     }
 }
+
 try {
     UserAPI::getInstance()->handleRequest();
 } catch (Exception $forError) {
@@ -406,9 +483,4 @@ try {
     ]);
     error_log("Critical API Error: " . $forError->getMessage());
 }
-
 ?>
-
-
-
-
