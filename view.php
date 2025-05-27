@@ -82,3 +82,17 @@ session_start();
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
+                                    </select>
+            </div>
+            <div class="form-group">
+                <label for="review-comment"><strong>Review:</strong></label>
+                <textarea id="review-comment" name="review-comment" rows="4" maxlength="100" placeholder="Write your review here (max 100 characters)..."></textarea>
+            </div>
+            <button id="submit-rating-review">Submit</button>
+        </div>
+    </div>
+
+    <script src="sneaker-api-loader/view.js"></script>
+</body>
+</html>
+                
