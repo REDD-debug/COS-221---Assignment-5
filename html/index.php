@@ -63,7 +63,11 @@
       <nav class="navbar">
         <ul class="nav">
           <li class="dropdown">
-            <a href="index.html" class="nav-label">ALL</a>
+          <a href="http://localhost/COS221/html/top-rated.html" class="nav-label">Top Rated</a>
+        </li>
+
+          <li class="dropdown">
+            <a href="http://localhost/COS221/html/index.php" class="nav-label">ALL</a>
           </li>
     
           <!-- Jordan -->
@@ -153,6 +157,9 @@
               <li data-category="CP13">Teenage Mutant Ninja Turtles</li>
             </ul>
           </li>
+           <li>
+            <button id="logout-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Logout</button>
+          </li>
         </ul>
       </nav>
       
@@ -166,7 +173,7 @@
       </div>
     </div>
     
-    <button onclick="document.getElementById('id01').style.display='block'" style="width:auto; position: fixed; bottom: 20px; right: 20px;">Login</button>
+    <!-- <button onclick="document.getElementById('id01').style.display='block'" style="width:auto; position: fixed; bottom: 20px; right: 20px;">Login</button>
     
     <div id="id01" class="modal">
       <form class="modal-content animate" action="../html/index.php" method="post">
@@ -192,8 +199,36 @@
           <span class="psw">Forgot <a href="#">password?</a></span>
         </div>
       </form>
-    </div>
+    </div> -->
     
     <script src="../sneaker-api-loader/index.js"></script>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', async function() {
+            try {
+                // Clear localStorage
+                localStorage.removeItem('apiKey');
+                localStorage.removeItem('userType');
+                localStorage.removeItem('userName');
+
+                // Clear apiKey cookie
+                document.cookie = 'apiKey=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+
+                // Make a request to logout.php to invalidate server-side session
+                await fetch('http://localhost/COS221/html/homepage.html', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Redirect to login page
+                window.location.replace('http://localhost/COS221/html/homepage.html');
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Redirect to login page even if the request fails
+                window.location.replace('http://localhost/COS221/html/homepage.html');
+            }
+        });
+    </script>
 </body>
 </html>
