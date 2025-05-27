@@ -79,6 +79,9 @@ class UserAPI{
                 case 'GetAllProducts':
                     $this->getAllProducts($forData);
                     break;
+                case 'AddRatingReview':
+                    $this->addRatingReview($forData);
+                    break;
                 default:
                     throw new Exception("Unknown request type", 404);
             }
@@ -268,7 +271,7 @@ class UserAPI{
         return $result->fetch_assoc();
     }
 
-    private function getAllProducts($forData) {
+     private function getAllProducts($forData) { //here
         try {
             if (!isset($forData['type']) || !is_string($forData['type']) || $forData['type'] !== "GetAllProducts") {
                 throw new Exception("Missing or invalid 'type'. Expected 'GetAllProducts'.", 400);
@@ -278,10 +281,17 @@ class UserAPI{
                 throw new Exception("Missing or invalid 'apikey'", 400);
             }
 
-            $user = $this->validateApiKey($forData['apikey']);
-
             if (!isset($forData['return']) || !is_array($forData['return']) || empty($forData['return'])) {
                 throw new Exception("Missing or invalid 'return' field", 400);
+            }
+
+            $apiKey = $forData['apikey'];
+            $userCheck = $this->forConnection->prepare("SELECT id FROM user_info WHERE api_key = ?");
+            $userCheck->bind_param("s", $apiKey);
+            $userCheck->execute();
+            $userResult = $userCheck->get_result();
+            if ($userResult->num_rows === 0) {
+                throw new Exception("Invalid API key", 401);
             }
 
             $allowedShoeFields = [
@@ -293,36 +303,60 @@ class UserAPI{
                 "Price_ID", "Shoe_ID", "Price", "Retailer_ID", "buy_link"
             ];
 
+            $allowedDerivedFields = [
+                "AverageRating", "Reviews"
+            ];
+
             $shoeFields = [];
             $priceFields = [];
+            $derivedFields = [];
             foreach ($forData['return'] as $field) {
                 if (in_array($field, $allowedShoeFields)) {
                     $shoeFields[] = "sp.`$field`";
                 } elseif (in_array($field, $allowedPriceFields)) {
                     $priceFields[] = "pl.`$field`";
+                } elseif (in_array($field, $allowedDerivedFields)) {
+                    $derivedFields[] = $field;
                 } else {
                     throw new Exception("Invalid field requested in 'return': '$field'", 400);
                 }
             }
 
-            if (empty($shoeFields) && empty($priceFields)) {
+            if (empty($shoeFields) && empty($priceFields) && empty($derivedFields)) {
                 throw new Exception("No valid return fields specified", 400);
             }
 
             $selectFields = array_merge($shoeFields, $priceFields);
-            $selectClause = implode(", ", $selectFields);
+            if (!empty($selectFields)) {
+                $selectClause = implode(", ", $selectFields);
+            } else {
+                $selectClause = "sp.Shoe_ID"; 
+            }
 
-            $query = "SELECT $selectClause 
-                    FROM shoe_products sp 
-                    LEFT JOIN (
-                        SELECT *
-                        FROM pricelisting pl1
-                        WHERE pl1.Price_ID = (
-                            SELECT MIN(pl2.Price_ID)
-                            FROM pricelisting pl2
-                            WHERE pl2.Shoe_ID = pl1.Shoe_ID
-                        )
-                    ) pl ON sp.Shoe_ID = pl.Shoe_ID";
+            $query = "SELECT $selectClause";
+            $hasDerived = !empty($derivedFields);
+            if ($hasDerived) {
+                $query .= ",
+                            (SELECT AVG(rating.Score)
+                             FROM rating
+                             WHERE rating.Shoe_ID = sp.Shoe_ID
+                             GROUP BY rating.Shoe_ID) AS AverageRating,
+                            (SELECT GROUP_CONCAT(review.Comment SEPARATOR '; ')
+                             FROM review
+                             WHERE review.Shoe_ID = sp.Shoe_ID
+                             GROUP BY review.Shoe_ID) AS Reviews";
+            }
+            $query .= "
+                      FROM shoe_products sp 
+                      LEFT JOIN (
+                          SELECT *
+                          FROM pricelisting pl1
+                          WHERE pl1.Price_ID = (
+                              SELECT MIN(pl2.Price_ID)
+                              FROM pricelisting pl2
+                              WHERE pl2.Shoe_ID = pl1.Shoe_ID
+                          )
+                      ) pl ON sp.Shoe_ID = pl.Shoe_ID";
 
             $params = [];
             $types = '';
@@ -390,6 +424,14 @@ class UserAPI{
 
             $products = [];
             while ($row = $result->fetch_assoc()) {
+                if (isset($row['Reviews']) && $row['Reviews'] !== null) {
+                    $row['Reviews'] = explode('; ', $row['Reviews']);
+                } else {
+                    $row['Reviews'] = [];
+                }
+                if (isset($row['AverageRating']) && $row['AverageRating'] === null) {
+                    $row['AverageRating'] = null;
+                }
                 $products[] = $row;
             }
 
@@ -406,6 +448,114 @@ class UserAPI{
             $this->handleError($forError);
         }
     }
+
+    private function addRatingReview($forData) { 
+        try {
+            if (!isset($forData['type']) || $forData['type'] !== 'AddRatingReview') {
+                throw new Exception("Missing or invalid 'type'. Expected 'AddRatingReview'.", 400);
+            }
+
+            if (!isset($forData['apikey']) || !is_string($forData['apikey']) || trim($forData['apikey']) === '') {
+                throw new Exception("Missing or invalid 'apikey'", 400);
+            }
+
+            if (!isset($forData['user_id']) || !is_string($forData['user_id']) || trim($forData['user_id']) === '') {
+                throw new Exception("Missing or invalid 'user_id'", 400);
+            }
+
+            if (!isset($forData['shoe_id']) || !is_string($forData['shoe_id']) || trim($forData['shoe_id']) === '') {
+                throw new Exception("Missing or invalid 'shoe_id'", 400);
+            }
+
+            if (!isset($forData['rating']) || !is_numeric($forData['rating']) || $forData['rating'] < 1 || $forData['rating'] > 5) {
+                throw new Exception("Missing or invalid 'rating'. Must be between 1 and 5.", 400);
+            }
+
+            if (isset($forData['review']) && $forData['review'] !== null) {
+                if (!is_string($forData['review']) || strlen($forData['review']) > 100) {
+                    throw new Exception("Invalid 'review'. Must be a string with 100 characters or less.", 400);
+                }
+            }
+
+            $apiKey = $forData['apikey'];
+            $userCheck = $this->forConnection->prepare("SELECT id FROM user_info WHERE api_key = ?");
+            $userCheck->bind_param("s", $apiKey);
+            $userCheck->execute();
+            $userResult = $userCheck->get_result();
+            if ($userResult->num_rows === 0) {
+                throw new Exception("Invalid API key", 401);
+            }
+            $userCheck->close();
+
+            $userId = $forData['user_id'];
+            $shoeId = $forData['shoe_id'];
+            $rating = (int)$forData['rating'];
+            $review = isset($forData['review']) && $forData['review'] !== '' ? $forData['review'] : null;
+
+            $userStmt = $this->forConnection->prepare("SELECT UserID FROM users WHERE UserID = ?");
+            $userStmt->bind_param("s", $userId);
+            $userStmt->execute();
+            $userResult = $userStmt->get_result();
+            if ($userResult->num_rows === 0) {
+                throw new Exception("User not found", 404);
+            }
+            $userStmt->close();
+
+            $shoeStmt = $this->forConnection->prepare("SELECT Shoe_ID FROM shoe_products WHERE Shoe_ID = ?");
+            $shoeStmt->bind_param("s", $shoeId);
+            $shoeStmt->execute();
+            $shoeResult = $shoeStmt->get_result();
+            if ($shoeResult->num_rows === 0) {
+                throw new Exception("Shoe not found", 404);
+            }
+            $shoeStmt->close();
+
+            $this->forConnection->begin_transaction();
+
+            try {
+                $ratingStmt = $this->forConnection->prepare(
+                    "INSERT INTO rating (UserID, Shoe_ID, Score) VALUES (?, ?, ?) 
+                    ON DUPLICATE KEY UPDATE Score = ?"
+                );
+                if (!$ratingStmt) {
+                    throw new Exception("Failed to prepare rating statement: " . $this->forConnection->error, 500);
+                }
+                $ratingStmt->bind_param("ssii", $userId, $shoeId, $rating, $rating);
+                if (!$ratingStmt->execute()) {
+                    throw new Exception("Failed to save rating: " . $ratingStmt->error, 500);
+                }
+                $ratingStmt->close();
+
+                if ($review !== null) {
+                    $reviewStmt = $this->forConnection->prepare(
+                        "INSERT INTO review (UserID, Shoe_ID, Comment) VALUES (?, ?, ?) 
+                        ON DUPLICATE KEY UPDATE Comment = ?"
+                    );
+                    if (!$reviewStmt) {
+                        throw new Exception("Failed to prepare review statement: " . $this->forConnection->error, 500);
+                    }
+                    $reviewStmt->bind_param("ssss", $userId, $shoeId, $review, $review);
+                    if (!$reviewStmt->execute()) {
+                        throw new Exception("Failed to save review: " . $reviewStmt->error, 500);
+                    }
+                    $reviewStmt->close();
+                }
+
+                $this->forConnection->commit();
+
+                echo json_encode([
+                    "status" => "success",
+                    "timestamp" => time(),
+                    "message" => "Rating and review added successfully"
+                ]);
+            } catch (Exception $e) {
+                $this->forConnection->rollback();
+                throw $e;
+            }
+        } catch (Exception $forError) {
+            $this->handleError($forError);
+        }
+    } 
 
     private function getTopRatedProducts($forData) {
         try {

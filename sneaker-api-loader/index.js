@@ -1,6 +1,6 @@
 // Configuration
 const API_URL = 'http://localhost/COS221/api.php';
-const API_KEY = '01f7356a50fcdef2ddef37c336dae321';
+const API_KEY = '3e504e63ec49bdfaaba32a5bb993759b';
 
 let currentPage = 1;
 let totalProducts = 0;
@@ -132,14 +132,16 @@ function displayProducts(products) {
 
     let html = '<div class="products-grid">';
 
-    products.forEach(product => {
+ products.forEach(product => {
         html += `
             <div class="product-card">
                 <div class="product-image">
-                <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
+                    <a href="../view.php?Shoe_ID=${product.Shoe_ID}"> 
+                        <img src="${product.image_URL || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.Name}">
+                    </a>
                 </div>
                 <div class="product-info">
-                    <h3 class="product-name">${product.Name}</h3>
+                    <h3 class="product-name">${product.Name || 'N/A'}</h3>
                     <p class="product-brand">Brand: ${product.Brand_ID || 'N/A'}</p>
                     <p>Color: ${product.Color || 'N/A'}</p>
                     <p>Size: ${product.Size || 'N/A'}</p>
