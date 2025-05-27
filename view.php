@@ -40,3 +40,21 @@ session_start();
                     </div>
                     <button class="next">❯</button>
                 </div>
+
+                <!-- Product Information -->
+                <div class="product-info">
+                    <h1 id="product-name"></h1>
+                    <p class="product-price" id="product-price"></p>
+                    <p class="product-description" id="product-description"></p>
+                    <div class="product-rating">
+                        <strong>Rating:</strong> <span id="product-rating"></span>
+                    </div>
+                    <div class="product-review">
+                        <strong>Review:</strong> <span id="product-review"></span>
+                    </div>
+                    <div class="add-rating-review">
+                        <a href="#" id="add-rating-review-link">Add Rating/Review</a>
+                    </div>
+                    <div class="product-store-link">
+                        <strong>Buy Now:</strong> <a id="product-buy-link" href="#" target="_blank">Visit Store</a>
+                    </div>
