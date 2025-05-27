@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dainty Gems - Signup</title>
     <link rel="stylesheet" href="CSS/signup.css">
     <script src="sneaker-api-loader/validation.js"></script>
 </head>
@@ -28,6 +27,7 @@
             <label for="type">Type:</label>
             <select id="type" name="type" required autocomplete="off">
                 <option value="Customer">Customer</option>
+                <option value="Admin">Admin</option>
             </select><br><br>
 
             <div id="error-message" style="color: red; margin: 10px 0;"></div>
