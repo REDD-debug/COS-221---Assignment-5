@@ -1,23 +1,37 @@
 <?php
 session_start();
-include 'header.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['api_key'])) {
     $_SESSION['user'] = [
         'username' => htmlspecialchars($_POST['username']),
         'api_key' => $_POST['api_key'],
-        'logged_in' => true
+        'user_type' => $_POST['user_type'] ?? 'Customer',
+        'logged_in' => true,
+        'login_time' => time()
     ];
     
     setcookie('apiKey', $_POST['api_key'], [
-        'expires' => time() + 86400,
+        'expires' => time() + 86400, 
         'path' => '/',
-        'secure' => true,
+        'secure' => isset($_SERVER['HTTPS']), 
         'httponly' => true,
         'samesite' => 'Strict'
     ]);
     
-    header("Location: index.php");
+    if ($_POST['user_type'] === 'Admin') {
+        header("Location: http://localhost/COS221/html/admin_dashboard.php");
+    } else {
+        header("Location: http://localhost/COS221/html/index.php");
+    }
+    exit();
+}
+
+if (isset($_SESSION['user']) && $_SESSION['user']['logged_in']) {
+    if ($_SESSION['user']['user_type'] === 'Admin') {
+        header("Location: http://localhost/COS221/html/admin_dashboard.php");
+    } else {
+        header("Location: http://localhost/COS221/html/index.php");
+    }
     exit();
 }
 ?><!DOCTYPE html>
@@ -25,97 +39,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Dainty Gems</title>
-    <style>
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #loginMessage {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
-        }
-        .error {
-            background-color: #ffdddd;
-            color: #d8000c;
-        }
-        .success {
-            background-color: #ddffdd;
-            color: #4F8A10;
-        }
-    </style>
+    <title>Login</title>
 </head>
 <body>
     <div class="container">
-        <h2>Login</h2>
+        <h2>Welcome Back</h2>
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
             </div>
-            <button type="submit">Login</button>
+            <button type="submit" id="submitBtn">Sign In</button>
             <div id="loginMessage"></div>
         </form>
-        <p>Don't have an account? <a href="signup.php">Sign up here</a>.</p>
+        
+        <div class="signup-link">
+            <p>Don't have an account? <a href="http://localhost/COS221/signup.php">Create one here</a></p>
+        </div>
     </div>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const messageEl = document.getElementById('loginMessage');
-            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const submitBtn = document.getElementById('submitBtn');
             
-            messageEl.textContent = '';
+            messageEl.innerHTML = '';
             messageEl.className = '';
             
+            if (!email) {
+                showMessage('Please enter your email address', 'error');
+                return;
+            }
+            
             if (!email.includes('@') || !email.includes('.')) {
-                messageEl.textContent = 'Please enter a valid email address';
-                messageEl.className = 'error';
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!password) {
+                showMessage('Please enter your password', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters long', 'error');
                 return;
             }
             
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Logging in soon...';
+            submitBtn.innerHTML = '<span class="loading"></span>Signing in...';
             
             try {
                 const response = await fetch('http://localhost/COS221/api.php', {
@@ -130,39 +110,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'])) {
                     })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
                 console.log("API Response:", data);
 
-                if (data.status === "success") {
-                    localStorage.setItem('apiKey', data.data[0].apikey);
+                if (data.status === "success" && data.data && data.data[0]) {
+                    const userData = data.data[0];
                     
-                    document.cookie = `apiKey=${data.data[0].apikey}; path=/; max-age=86400; Secure; SameSite=Strict`;
+                    localStorage.setItem('apiKey', userData.apikey);
+                    localStorage.setItem('userType', userData.user_type);
+                    localStorage.setItem('userName', userData.name);
+                    
+                    document.cookie = `apiKey=${userData.apikey}; path=/; max-age=86400; Secure; SameSite=Strict`;
+                    
+                    showMessage('Login successful! Redirecting...', 'success');
                     
                     const hiddenForm = document.createElement('form');
                     hiddenForm.method = 'POST';
-                    hiddenForm.action = 'login.php';
+                    hiddenForm.action = 'http://localhost/COS221/login.php';
+                    hiddenForm.style.display = 'none';
                     
                     hiddenForm.innerHTML = `
-                        <input type="hidden" name="username" value="${data.data[0].username || email.split('@')[0]}">
-                        <input type="hidden" name="api_key" value="${data.data[0].apikey}">
+                        <input type="hidden" name="username" value="${userData.name || email.split('@')[0]}">
+                        <input type="hidden" name="api_key" value="${userData.apikey}">
+                        <input type="hidden" name="user_type" value="${userData.user_type}">
                     `;
+                    
                     document.body.appendChild(hiddenForm);
-                    hiddenForm.submit();
+                    
+                    setTimeout(() => {
+                        hiddenForm.submit();
+                    }, 1500);
                     
                 } else {
-                    messageEl.textContent = data.message || 'You have failed to login. Please try again.';
-                    messageEl.className = 'error';
+                    const errorMessage = data.message || 'Login failed. Please check your credentials and try again.';
+                    showMessage(errorMessage, 'error');
                 }
             } catch (error) {
-                messageEl.textContent = 'There is a network error. Please try again.';
-                messageEl.className = 'error';
-                console.error('There is a login error:', error);
+                console.error('Login error:', error);
+                showMessage('Network error. Please check your connection and try again.', 'error');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Login';
+                submitBtn.innerHTML = 'Sign In';
             }
         });
-    </script>
 
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('loginMessage');
+            messageEl.innerHTML = message;
+            messageEl.className = type;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').focus();
+        });
+    </script>
 </body>    
 </html>
