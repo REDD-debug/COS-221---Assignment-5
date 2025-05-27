@@ -256,5 +256,6 @@ function updatePagination() {
     
     html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
     
+    
     paginationContainer.innerHTML = html;
 }
