@@ -27,3 +27,16 @@ session_start();
         }
     </style>
 </head>
+<body>
+    <a href="html/index.php" class="back-button">×</a> <!-- Back button to index.php -->
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="product-view">
+                <!-- Carousel for product images -->
+                <div class="carousel">
+                    <button class="prev">❮</button>
+                    <div class="carousel-images">
+                        <!-- Images will be populated by view.js -->
+                    </div>
+                    <button class="next">❯</button>
+                </div>
